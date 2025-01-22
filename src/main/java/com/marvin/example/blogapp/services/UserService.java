@@ -6,7 +6,6 @@ import com.marvin.example.blogapp.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.Errors;
 
 
 @Service
@@ -33,12 +32,20 @@ public class UserService {
     }
 
     /**
+     * Saves the details of a user in the database
+     * @param user
+     */
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+    /**
      * Retrieve a user based on its username
      *
      * @param email the username of the user to retrieve
      * @return the User entity associated with the given username, or null if no user with the specified username exists
      */
-    public User findByUsername(String email) {
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
 

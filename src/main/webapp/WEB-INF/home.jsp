@@ -13,11 +13,56 @@
 <html>
 <head>
     <title>Home</title>
+    <link type="text/css" rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-    <form method="post" action="/logout">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="submit" value="Logout">
-    </form>
+    <nav>
+        <h1>BlogHub</h1>
+        <form method="get" action="">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <input type="search" placeholder="Search by Topic, Author or Title...">
+            <input type="submit" value="&#128270;">
+        </form>
+
+        <a href="/user/personal-profile">
+            <img src="${currentUser.profilePictureUrl}" class="profile-icon" alt="profile-picture">
+            <span><c:out value="${currentUser.username}"/></span>
+        </a>
+
+        <form method="post" action="/logout">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <input type="submit" value="Logout">
+        </form>
+    </nav>
+
+    <section>
+        <details open>
+            <summary>Menu</summary>
+            <ul>
+                <li><a href="/user/home">Home</a></li>
+            </ul>
+        </details>
+
+        <section>
+<%--            here posts will be displayed --%>
+        </section>
+
+        <c:if test="${popularTopics.size() != 0}">
+            <details open>
+                <summary>Popular Topics</summary>
+                <ul>
+                    <c:forEach var="topic" items="${popularTopics}">
+                        <li><a><c:out value="${topic.name}"/></a></li>
+                    </c:forEach>
+                </ul>
+            </details>
+        </c:if>
+
+    </section>
+
+    <footer>
+        <span>&copy; <span id="currentYear"></span> BlogHub. All rights reserved.</span>
+    </footer>
+    <script src="/js/index.js" ></script>
 </body>
 </html>

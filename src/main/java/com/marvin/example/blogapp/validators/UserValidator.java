@@ -34,11 +34,13 @@ public class UserValidator implements Validator {
     public void validate(Object object, Errors errors) {
         User user = (User) object;
 
-        if (!user.getPasswordConfirmation().equals(user.getPassword())) {
-            errors.rejectValue("passwordConfirmation", "Match");
-        }
-
         User existingUser = userRepository.findByEmail(user.getEmail()).orElse(null);
+
+        if (user.getId() == null) {
+            if(!user.getPasswordConfirmation().equals(user.getPassword())){
+                errors.rejectValue("passwordConfirmation", "Match");
+            }
+        }
 
         if (existingUser != null) {
             // registration case, check if the user doesn't exist already

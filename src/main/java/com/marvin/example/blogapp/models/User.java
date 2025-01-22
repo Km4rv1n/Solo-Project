@@ -38,12 +38,11 @@ public class User {
     @Email
     private String email;
 
-    @NotBlank
     @Size(min = 8, max = 255)
+    @NotBlank
     private String password;
 
     @Transient
-    @NotBlank
     private String passwordConfirmation;
 
     @Enumerated(EnumType.STRING)
