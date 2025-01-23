@@ -8,7 +8,11 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -52,6 +56,8 @@ public class User {
 
     private LocalDate createdAt;
 
+    //private LocalDateTime lastLogin;
+
     @Size(max = 255)
     private String profilePictureUrl = "/images/default-avatar-profile-icon.jpg";
 
@@ -63,12 +69,16 @@ public class User {
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> posts = new HashSet<>();
 
-
-    @ManyToMany(fetch = FetchType.LAZY ,cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "blocked_users",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "blocked_user_id")
     )
-    private Set<User> blockedUsers = new HashSet<>();
+    private List<User> blockedUsers = new ArrayList<>();
+
+    public String getFormattedCreatedAt() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return createdAt.format(formatter);
+    }
 }

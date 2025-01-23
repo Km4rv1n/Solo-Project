@@ -5,6 +5,7 @@ import com.marvin.example.blogapp.repositories.TopicRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TopicService {
@@ -13,7 +14,37 @@ public class TopicService {
         this.topicRepository = topicRepository;
     }
 
+    /**
+     *
+     * @return a list containing the top 10 topics with the highest number of posts
+     */
     public List<Topic> getTop10Topics() {
         return topicRepository.findTop10ByPostCount();
+    }
+
+    /**
+     *
+     * @return a list containing all topics
+     */
+    public List<Topic> getAllTopics() {
+        return topicRepository.findAll();
+    }
+
+    /**
+     *
+     * @param name
+     * @return topic with the corresponding name. if it is not found, a new topic is created
+     */
+    public Topic findTopicByName(String name) {
+        Optional<Topic> topic = topicRepository.findTopicByName(name);
+        if (topic.isPresent()) {
+            return topic.get();
+        }
+        else{
+            Topic newTopic = new Topic();
+            newTopic.setName(name);
+            topicRepository.save(newTopic);
+            return newTopic;
+        }
     }
 }

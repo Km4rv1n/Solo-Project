@@ -1,13 +1,16 @@
 package com.marvin.example.blogapp.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,6 +43,7 @@ public class Post {
         this.createdAt = LocalDateTime.now();
     }
 
+    @Valid
     @ManyToOne
     @JoinColumn(name = "topic_id")
     private Topic topic;
@@ -58,4 +62,9 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> likedBy = new HashSet<>();
+
+    public String getFormattedCreatedAt() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return createdAt.format(formatter);
+    }
 }

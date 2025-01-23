@@ -35,16 +35,47 @@
         </form>
     </nav>
 
-    <section>
+    <section class="middle">
         <details open>
             <summary>Menu</summary>
             <ul>
-                <li><a href="/user/home">Home</a></li>
+                <li><a href="/user/home/1">Home</a></li>
+                <li><a href="/posts/new">Create a Post</a></li>
+                <li><a href="/user/blocked">Blocked Users</a></li>
+                <li><a href="/posts/my-posts">My Posts</a></li>
             </ul>
         </details>
 
         <section>
-<%--            here posts will be displayed --%>
+            <c:choose>
+                <c:when test="${posts.content.size() != 0}">
+                    <c:forEach var="post" items="${posts.content}">
+                        <div>
+                            <h3><c:out value="${post.title}"/></h3>
+                            <p>Topic: <c:out value="${post.topic.name}"/></p>
+                            <p><a href="/user/${post.creator.id}"><c:out value="${post.creator.username}"/>&nbsp;<img src="${post.creator.profilePictureUrl}" class="profile-icon"></a></p>
+                            <p><c:out value="${post.formattedCreatedAt}"/></p>
+                            <c:if test="${post.imageUrl != null}">
+                                <img src="${post.imageUrl}" class="post-image">
+                            </c:if>
+                            <p><c:out value="${post.description}"/></p>
+                            <div>
+                                likes, reports go here
+                            </div>
+                            <div>
+                                comments go here
+                            </div>
+                        </div>
+                    </c:forEach>
+
+                    <c:forEach begin="1" end="${totalPages}" var="index">
+                        <a href="/user/home/${index}">${index}</a>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <p>No posts found!</p>
+                </c:otherwise>
+            </c:choose>
         </section>
 
         <c:if test="${popularTopics.size() != 0}">
@@ -57,6 +88,7 @@
                 </ul>
             </details>
         </c:if>
+
 
     </section>
 

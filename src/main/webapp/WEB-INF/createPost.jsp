@@ -2,7 +2,7 @@
   Created by IntelliJ IDEA.
   User: marvinkika
   Date: 22.1.25
-  Time: 11:04 AM
+  Time: 8:37 PM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -11,8 +11,9 @@
 <%@ page isErrorPage="true" %>
 
 <html>
+<html>
 <head>
-    <title>MyProfile</title>
+    <title>Home</title>
     <link type="text/css" rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -45,43 +46,40 @@
         </details>
 
         <fieldset>
-            <legend>My Profile</legend>
-
-            <p><form:errors path="user.*"/></p>
-            <form:form method="post" action="/user/personal-profile" modelAttribute="user" enctype="multipart/form-data">
+            <legend>Create a Post</legend>
+            <form:form method="post" action="/posts/new" modelAttribute="blogPost" enctype="multipart/form-data">
+                <p><form:errors path="*"/></p>
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <input type="hidden" name="_method" value="put">
-
-                <img src="${currentUser.profilePictureUrl}" class="profile-picture" alt="Profile-Picture"><br>
-                <input type="file" name="profilePictureFile" accept="image/png, image/jpeg, image/jpg">
-
-                <form:input path="password" type="hidden"/>
-                <form:input path="passwordConfirmation" type="hidden"/>
-
                 <p>
-                    <form:label path="firstName">First Name:</form:label>
-                    <form:input path="firstName"/>
+                    <form:label path="title">Title:</form:label>
+                    <form:input path="title"/>
                 </p>
                 <p>
-                    <form:label path="lastName">Last Name:</form:label>
-                    <form:input path="lastName"/>
+                    <label>Topic:</label>
+                    <form:input path="topic.name" list="listOfTopics"/>
+                    <datalist id="listOfTopics">
+                        <c:forEach var="topic" items="${allTopics}">
+                            <option><c:out value="${topic.name}"/></option>
+                        </c:forEach>
+                    </datalist>
                 </p>
                 <p>
-                    <form:label path="username">Username:</form:label>
-                    <form:input path="username"/>
+                    <label>Image (optional):</label>
+                    <input type="file" name="postImageFile" accept="image/png, image/jpeg, image/jpg">
                 </p>
                 <p>
-                    <form:label path="email">Email:</form:label>
-                    <form:input path="email"/>
+                    <form:label path="description">Description:</form:label>
+                    <form:textarea path="description"/>
                 </p>
-                <input type="submit" value="Save Changes">
+                <input type="submit" value="Submit">
             </form:form>
         </fieldset>
+
     </section>
 
     <footer>
         <span>&copy; <span id="currentYear"></span> BlogHub. All rights reserved.</span>
     </footer>
-    <script src="/js/index.js" ></script>
+<script src="/js/index.js"></script>
 </body>
 </html>

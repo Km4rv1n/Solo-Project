@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 
 @Service
 public class UserService {
@@ -40,7 +42,7 @@ public class UserService {
     }
 
     /**
-     * Retrieve a user based on its username
+     * Retrieve a user based on its email
      *
      * @param email the username of the user to retrieve
      * @return the User entity associated with the given username, or null if no user with the specified username exists
@@ -49,5 +51,40 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
+//    public void updateUserLastActive(User user) {
+//        user.setLastActive(LocalDateTime.now());
+//        userRepository.save(user);
+//    }
+
+    /**
+     *
+     * @param id
+     * @return the user object with the given id, or throw an exception if the object is not found
+     */
+    public User findById(Integer id) {
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException(id.toString()));
+    }
+
+    /**
+     * add the user object to the currentUser's list of blocked users
+     * @param currentUser
+     * @param user
+     */
+    public void blockUser(User currentUser, User user){
+        if(!currentUser.getBlockedUsers().contains(user)){
+            currentUser.getBlockedUsers().add(user);
+            userRepository.save(currentUser);
+        }
+    }
+
+    /**
+     * remove the user object from the currentUser's list of blocked users
+     * @param currentUser
+     * @param user
+     */
+    public void unblockUser(User currentUser, User user){
+        currentUser.getBlockedUsers().remove(user);
+        userRepository.save(currentUser);
+    }
 
 }

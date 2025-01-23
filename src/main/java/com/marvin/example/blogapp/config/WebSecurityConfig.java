@@ -9,13 +9,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 public class WebSecurityConfig {
 
     private final HandlerMappingIntrospector introspector;
-
     private final UserDetailsService userDetailsService;
 
     public WebSecurityConfig(HandlerMappingIntrospector introspector, UserDetailsService userDetailsService) {
@@ -29,7 +29,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers(
-                                        new MvcRequestMatcher(introspector, "/user/home")
+                                        new MvcRequestMatcher(introspector, "/user/home/1")
                                 )
                                 .authenticated()
                                 .anyRequest()
@@ -38,7 +38,7 @@ public class WebSecurityConfig {
                 .formLogin(
                         form ->
                                 form.loginPage("/login")
-                                        .defaultSuccessUrl("/user/home")
+                                        .defaultSuccessUrl("/user/home/1")
                                         .permitAll()
                 )
                 .logout(

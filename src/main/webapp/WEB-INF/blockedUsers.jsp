@@ -1,8 +1,8 @@
 <%--
   Created by IntelliJ IDEA.
   User: marvinkika
-  Date: 22.1.25
-  Time: 11:04 AM
+  Date: 23.1.25
+  Time: 6:22 PM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -12,9 +12,13 @@
 
 <html>
 <head>
-    <title>MyProfile</title>
+    <title>BlockedUsers</title>
+</head>
+<head>
+    <title>Home</title>
     <link type="text/css" rel="stylesheet" href="/css/styles.css">
 </head>
+
 <body>
     <nav>
         <h1>BlogHub</h1>
@@ -35,48 +39,32 @@
         </form>
     </nav>
 
-    <section>
+    <section class="middle">
         <details open>
             <summary>Menu</summary>
             <ul>
                 <li><a href="/user/home/1">Home</a></li>
                 <li><a href="/posts/new">Create a Post</a></li>
+                <li><a href="">Blocked Users</a></li>
             </ul>
         </details>
 
-        <fieldset>
-            <legend>My Profile</legend>
+        <section class="blocked-users-section">
+            <h2>Blocked Users</h2>
+            <c:forEach var="blockedUser" items="${blockedUsers}">
+                <div>
+                    <img src="${blockedUser.profilePictureUrl}" class="profile-icon">
+                    <h3><c:out value="${blockedUser.username}"/></h3>
+                    lastlogin
 
-            <p><form:errors path="user.*"/></p>
-            <form:form method="post" action="/user/personal-profile" modelAttribute="user" enctype="multipart/form-data">
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <input type="hidden" name="_method" value="put">
-
-                <img src="${currentUser.profilePictureUrl}" class="profile-picture" alt="Profile-Picture"><br>
-                <input type="file" name="profilePictureFile" accept="image/png, image/jpeg, image/jpg">
-
-                <form:input path="password" type="hidden"/>
-                <form:input path="passwordConfirmation" type="hidden"/>
-
-                <p>
-                    <form:label path="firstName">First Name:</form:label>
-                    <form:input path="firstName"/>
-                </p>
-                <p>
-                    <form:label path="lastName">Last Name:</form:label>
-                    <form:input path="lastName"/>
-                </p>
-                <p>
-                    <form:label path="username">Username:</form:label>
-                    <form:input path="username"/>
-                </p>
-                <p>
-                    <form:label path="email">Email:</form:label>
-                    <form:input path="email"/>
-                </p>
-                <input type="submit" value="Save Changes">
-            </form:form>
-        </fieldset>
+                    <form method="post" action="/user/unblock/${blockedUser.id}">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <input type="hidden" name="_method" value="delete">
+                        <input type="submit" value="Unblock">
+                    </form>
+                </div>
+            </c:forEach>
+        </section>
     </section>
 
     <footer>
