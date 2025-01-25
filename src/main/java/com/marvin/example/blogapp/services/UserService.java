@@ -71,10 +71,8 @@ public class UserService {
      * @param user
      */
     public void blockUser(User currentUser, User user){
-        if(!currentUser.getBlockedUsers().contains(user)){
             currentUser.getBlockedUsers().add(user);
             userRepository.save(currentUser);
-        }
     }
 
     /**
@@ -87,4 +85,13 @@ public class UserService {
         userRepository.save(currentUser);
     }
 
+    /**
+     * updates the lastSeen field of the user entity with the given email, with a new timestamp
+     * @param email
+     */
+    public void updateLastSeen(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+        user.setLastSeen(LocalDateTime.now());
+        userRepository.save(user);
+    }
 }

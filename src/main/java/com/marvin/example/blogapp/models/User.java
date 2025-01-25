@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class User {
 
     @Id
@@ -56,7 +56,7 @@ public class User {
 
     private LocalDate createdAt;
 
-    //private LocalDateTime lastLogin;
+    private LocalDateTime lastSeen;
 
     @Size(max = 255)
     private String profilePictureUrl = "/images/default-avatar-profile-icon.jpg";
@@ -75,10 +75,15 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "blocked_user_id")
     )
-    private List<User> blockedUsers = new ArrayList<>();
+    private Set<User> blockedUsers = new HashSet<>();
 
     public String getFormattedCreatedAt() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return createdAt.format(formatter);
+    }
+
+    public String getFormattedLastSeen() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return lastSeen.format(formatter);
     }
 }

@@ -2,12 +2,14 @@ package com.marvin.example.blogapp.services;
 
 import com.marvin.example.blogapp.models.Topic;
 import com.marvin.example.blogapp.repositories.TopicRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class TopicService {
     private final TopicRepository topicRepository;
     public TopicService(TopicRepository topicRepository) {

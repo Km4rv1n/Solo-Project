@@ -1,8 +1,8 @@
 <%--
   Created by IntelliJ IDEA.
   User: marvinkika
-  Date: 21.1.25
-  Time: 9:35 AM
+  Date: 24.1.25
+  Time: 9:47 PM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -13,7 +13,7 @@
 
 <html>
 <head>
-    <title>Home</title>
+    <title>Search</title>
     <link type="text/css" rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -21,7 +21,7 @@
     <h1>BlogHub</h1>
     <form method="get" action="/posts/search/1">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="search" placeholder="Search by Topic, Author or Title..." name="searchQuery">
+        <input type="search" placeholder="Search by Topic, Author or Title..." name="searchQuery" value="${searchQuery}">
         <input type="submit" value="&#128270;">
     </form>
 
@@ -35,7 +35,6 @@
         <input type="submit" value="Logout">
     </form>
 </nav>
-
 <section class="middle">
     <details open>
         <summary>Menu</summary>
@@ -50,7 +49,7 @@
     </details>
 
     <section>
-        <h2>All Posts</h2>
+        <h2>Search results for: <c:out value="${searchQuery}"/></h2>
         <c:choose>
             <c:when test="${posts.content.size() != 0}">
                 <c:forEach var="post" items="${posts.content}">
@@ -78,12 +77,11 @@
                             <p><c:out value="${post.comments.size()}"/> comments</p>
                             <a href="/posts/view/${post.id}">View Full Post</a>
                         </div>
-
                     </div>
                 </c:forEach>
 
                 <c:forEach begin="1" end="${totalPages}" var="index">
-                    <a href="/user/home/${index}">${index}</a>
+                    <a href="/posts/search/${index}?searchQuery=${searchQuery}">${index}</a>
                 </c:forEach>
             </c:when>
             <c:otherwise>
@@ -97,16 +95,11 @@
             <summary>Popular Topics</summary>
             <ul>
                 <c:forEach var="topic" items="${popularTopics}">
-                    <li>
-                        <a href="/posts/search/1?searchQuery=${topic.name}"><c:out value="${topic.name}"/>
-                        &nbsp;<span>(<c:out value="${topic.posts.size()}"/>)</span>
-                        </a>
-                    </li>
+                    <li><a href="/posts/search/1?searchQuery=${topic.name}"><c:out value="${topic.name}"/></a></li>
                 </c:forEach>
             </ul>
         </details>
     </c:if>
-
 
 </section>
 

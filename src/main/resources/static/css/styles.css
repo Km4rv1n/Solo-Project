@@ -32,6 +32,18 @@ nav{
     overflow: auto;
 }
 
+#list-of-likes{
+    overflow: auto;
+    height: 300px;
+    width: 250px;
+}
+
+.all-comments{
+    border: 2px black solid;
+    width: 400px;
+    height: 600px;
+    overflow: auto;
+}
 footer{
     text-align: center;
 }

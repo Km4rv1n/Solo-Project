@@ -1,8 +1,8 @@
 <%--
   Created by IntelliJ IDEA.
   User: marvinkika
-  Date: 22.1.25
-  Time: 8:37 PM
+  Date: 24.1.25
+  Time: 12:51 PM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -11,9 +11,8 @@
 <%@ page isErrorPage="true" %>
 
 <html>
-<html>
 <head>
-    <title>Home</title>
+    <title>Edit Post</title>
     <link type="text/css" rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -46,10 +45,11 @@
     </details>
 
     <fieldset>
-        <legend>Create a Post</legend>
-        <form:form method="post" action="/posts/new" modelAttribute="blogPost" enctype="multipart/form-data">
-            <p><form:errors path="*"/></p>
+        <legend>Edit Post</legend>
+        <form:form method="post" modelAttribute="post" enctype="multipart/form-data">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <input type="hidden" name="_method" value="put">
+            <p><form:errors path="*"/></p>
             <p>
                 <form:label path="title">Title:</form:label>
                 <form:input path="title"/>
@@ -64,7 +64,14 @@
                 </datalist>
             </p>
             <p>
-                <label>Image (optional):</label>
+                <form:label path="createdAt">Created at:</form:label>
+                <form:input path="formattedCreatedAt" readonly="true"/>
+            </p>
+            <p>
+                <c:if test="${post.imageUrl != null}">
+                    <img src="${post.imageUrl}" class="post-image">
+                </c:if><br>
+                <label>Image:</label>
                 <input type="file" name="postImageFile" accept="image/png, image/jpeg, image/jpg">
             </p>
             <p>

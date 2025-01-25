@@ -17,14 +17,13 @@ public class WebSecurityConfig {
 
     private final HandlerMappingIntrospector introspector;
     private final UserDetailsService userDetailsService;
-
     public WebSecurityConfig(HandlerMappingIntrospector introspector, UserDetailsService userDetailsService) {
         this.introspector = introspector;
         this.userDetailsService = userDetailsService;
     }
 
     @Bean
-    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    protected SecurityFilterChain filterChain(HttpSecurity http, LastSeenFilter lastSeenFilter) throws Exception {
         http
                 .authorizeHttpRequests(
                         auth -> auth
@@ -43,7 +42,9 @@ public class WebSecurityConfig {
                 )
                 .logout(
                         logout -> logout.permitAll()
-                );
+                )
+                .addFilterAfter(lastSeenFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

@@ -1,13 +1,12 @@
 package com.marvin.example.blogapp.models;
 
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +17,8 @@ import java.util.Set;
 @Table(name = "posts")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Post {
 
     @Id
@@ -32,7 +32,7 @@ public class Post {
     private String imageUrl;
 
     @NotBlank
-    @Size(min = 3, max = 255)
+    @Size(min = 3, max = 5000)
     private String description;
 
     @Column(updatable = false)
