@@ -45,8 +45,16 @@
                     value="${currentUser.blockedUsers.size()}"/></span></li>
             <li><a href="/posts/logged-user/1">My Posts</a>&nbsp;<span><c:out
                     value="${currentUser.posts.size()}"/></span></li>
+            <c:if test="${currentUser.role == 'ROLE_ADMIN'}">
+                <li><a href="/admin/dashboard/1">Admin Dashboard</a></li>
+                <li><a href="/admin/reports/1">Reports</a></li>
+            </c:if>
+            <c:if test="${currentUser.role == 'ROLE_USER'}">
+                <li><a href="/user/my-reports/1">My Reports</a></li>
+            </c:if>
         </ul>
     </details>
+
     <section>
         <h3><c:out value="${post.title}"/></h3>
         <p>Topic: <c:out value="${post.topic.name}"/></p>
@@ -64,14 +72,22 @@
                 <dialog id="likes-modal">
                     <h3>Likes</h3>
                     <ul id="list-of-likes">
-                        <c:forEach var="user" items="${post.likedBy}">
-                            <li>
-                                <a href="/user/${user.id}">
-                                    <img src="${user.profilePictureUrl}" class="profile-icon">
-                                    <span><c:out value="${user.username}"/></span>
-                                </a>
-                            </li>
-                        </c:forEach>
+                        <c:choose>
+                            <c:when test="${post.likedBy.size() != 0}">
+                                <c:forEach var="user" items="${post.likedBy}">
+                                    <li>
+                                        <a href="/user/${user.id}">
+                                            <img src="${user.profilePictureUrl}" class="profile-icon">
+                                            <span><c:out value="${user.username}"/></span>
+                                        </a>
+                                    </li>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <p>No likes yet!</p>
+                            </c:otherwise>
+                        </c:choose>
+
                     </ul>
                     <form method="dialog">
                         <input type="submit" value="Back">

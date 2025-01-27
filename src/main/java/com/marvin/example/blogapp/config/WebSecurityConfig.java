@@ -1,6 +1,5 @@
 package com.marvin.example.blogapp.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -9,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
@@ -23,13 +21,15 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    protected SecurityFilterChain filterChain(HttpSecurity http, LastSeenFilter lastSeenFilter) throws Exception {
+    protected SecurityFilterChain filterChain(HttpSecurity http, LastSeenFilter lastSeenFilter, CustomAuthenticationFailureHandler customAuthenticationFailureHandler) throws Exception {
         http
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers(
-                                        new MvcRequestMatcher(introspector, "/user/home/1")
-                                )
+                                                                .requestMatchers(
+                                        new MvcRequestMatcher(introspector, "/admin/**")).hasRole("ADMIN")
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/user/report/**")).hasRole("USER")
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/user/my-reports/**")).hasRole("USER")
+                                .requestMatchers(new MvcRequestMatcher(introspector, "/user/home/1"))
                                 .authenticated()
                                 .anyRequest()
                                 .permitAll()
@@ -37,6 +37,7 @@ public class WebSecurityConfig {
                 .formLogin(
                         form ->
                                 form.loginPage("/login")
+                                        .failureHandler(customAuthenticationFailureHandler)
                                         .defaultSuccessUrl("/user/home/1")
                                         .permitAll()
                 )

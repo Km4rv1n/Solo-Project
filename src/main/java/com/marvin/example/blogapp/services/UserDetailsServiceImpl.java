@@ -1,5 +1,6 @@
 package com.marvin.example.blogapp.services;
 
+import com.marvin.example.blogapp.exceptions.BannedUserException;
 import com.marvin.example.blogapp.models.User;
 import com.marvin.example.blogapp.repositories.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,6 +35,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("User not found");
+        }
+
+        if (user.isBanned()) {
+            throw new BannedUserException("This account has been banned");
         }
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), getAuthorities(user));    }

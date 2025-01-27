@@ -1,6 +1,5 @@
 package com.marvin.example.blogapp.config;
 
-import com.marvin.example.blogapp.models.User;
 import com.marvin.example.blogapp.services.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

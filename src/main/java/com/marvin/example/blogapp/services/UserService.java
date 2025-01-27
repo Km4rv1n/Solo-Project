@@ -3,6 +3,10 @@ package com.marvin.example.blogapp.services;
 import com.marvin.example.blogapp.enums.Role;
 import com.marvin.example.blogapp.models.User;
 import com.marvin.example.blogapp.repositories.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,6 +15,7 @@ import java.time.LocalDateTime;
 
 
 @Service
+@Transactional
 public class UserService {
 
     private UserRepository userRepository;
@@ -51,11 +56,6 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
-//    public void updateUserLastActive(User user) {
-//        user.setLastActive(LocalDateTime.now());
-//        userRepository.save(user);
-//    }
-
     /**
      *
      * @param id
@@ -94,4 +94,42 @@ public class UserService {
         user.setLastSeen(LocalDateTime.now());
         userRepository.save(user);
     }
+
+    /**
+     * @param pageNumber
+     * @param currentUser
+     * @return page of users who are not in a blocking relationship with the current user, and are not the current user themselves
+     */
+    public Page<User> getNotBlockedUsersPage(int pageNumber, User currentUser) {
+        PageRequest pageRequest = PageRequest.of(pageNumber, 2, Sort.Direction.DESC, "createdAt");
+        return userRepository.findAllNotBlocked(pageRequest,currentUser);
+    }
+
+    /**
+     * sets the role of the user to Admin
+     * @param user
+     */
+    public void promoteToAdmin(User user) {
+        user.setRole(Role.ROLE_ADMIN);
+        userRepository.save(user);
+    }
+
+    /**
+     * sets the banned status of the user to true
+     * @param user
+     */
+    public void banUser(User user) {
+        user.setBanned(true);
+        userRepository.save(user);
+    }
+
+    /**
+     * sets the banned status of the user to false
+     * @param user
+     */
+    public void unbanUser(User user) {
+        user.setBanned(false);
+        userRepository.save(user);
+    }
 }
+

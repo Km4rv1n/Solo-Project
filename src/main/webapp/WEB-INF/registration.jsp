@@ -48,5 +48,9 @@
   </form:form>
   <a href="/login">Already have an account? <strong>Log In.</strong></a>
 </fieldset>
+<footer>
+  <span>&copy; <span id="currentYear"></span> BlogHub. All rights reserved.</span>
+</footer>
+<script src="/js/index.js"></script>
 </body>
 </html>

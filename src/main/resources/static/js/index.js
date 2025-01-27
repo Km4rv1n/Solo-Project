@@ -7,6 +7,9 @@ document.getElementById("currentYear").innerText = new Date().getFullYear();
 const showLikesModalLink = document.getElementById("show-likes-modal");
 const likesModal = document.getElementById("likes-modal");
 showLikesModalLink.addEventListener('click', function (){
-    likesModal.show();
+    likesModal.showModal();
 })
 // ---- END - VIEW POST PAGE ----
+
+
+

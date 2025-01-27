@@ -41,6 +41,17 @@
         <ul>
             <li><a href="/user/home/1">Home</a></li>
             <li><a href="/posts/new">Create a Post</a></li>
+            <li><a href="/user/blocked">Blocked Users</a>&nbsp;<span><c:out
+                    value="${currentUser.blockedUsers.size()}"/></span></li>
+            <li><a href="/posts/logged-user/1">My Posts</a>&nbsp;<span><c:out
+                    value="${currentUser.posts.size()}"/></span></li>
+            <c:if test="${currentUser.role == 'ROLE_ADMIN'}">
+                <li><a href="/admin/dashboard/1">Admin Dashboard</a></li>
+                <li><a href="/admin/reports/1">Reports</a></li>
+            </c:if>
+            <c:if test="${currentUser.role == 'ROLE_USER'}">
+                <li><a href="/user/my-reports/1">My Reports</a></li>
+            </c:if>
         </ul>
     </details>
 

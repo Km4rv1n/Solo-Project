@@ -25,9 +25,12 @@
 
     <fieldset>
         <legend>Login</legend>
-
         <c:if test="${errorMessage != null}">
             <c:out value="${errorMessage}"/>
+        </c:if>
+
+        <c:if test="${bannedMessage != null}">
+            <c:out value="${bannedMessage}"/>
         </c:if>
         <form method="POST" action="/login">
             <p>
@@ -44,6 +47,9 @@
         <a href="/register">Don't have an account? <strong>Register.</strong></a>
     </fieldset>
 
-
+    <footer>
+        <span>&copy; <span id="currentYear"></span> BlogHub. All rights reserved.</span>
+    </footer>
+    <script src="/js/index.js"></script>
 </body>
 </html>

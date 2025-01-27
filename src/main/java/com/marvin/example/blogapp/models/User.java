@@ -5,12 +5,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,11 +63,6 @@ public class User {
     @Size(max = 255)
     private String profilePictureUrl = "/images/default-avatar-profile-icon.jpg";
 
-    @PrePersist
-    private void onCreate() {
-        this.createdAt = LocalDate.now();
-    }
-
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> posts = new HashSet<>();
 
@@ -77,9 +74,20 @@ public class User {
     )
     private Set<User> blockedUsers = new HashSet<>();
 
+    @OneToMany(mappedBy = "reporter", fetch = FetchType.LAZY)
+    private Set<Report> reportsAsReporter = new HashSet<>();
+
+    @OneToMany(mappedBy = "reportedUser", fetch = FetchType.LAZY)
+    private Set<Report> reportsAsReported = new HashSet<>();
+
     public String getFormattedCreatedAt() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return createdAt.format(formatter);
+    }
+
+    @PrePersist
+    private void onCreate() {
+        this.createdAt = LocalDate.now();
     }
 
     public String getFormattedLastSeen() {

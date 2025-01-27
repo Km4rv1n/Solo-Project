@@ -4,7 +4,6 @@ import com.marvin.example.blogapp.models.Post;
 import com.marvin.example.blogapp.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
@@ -28,6 +27,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
         FROM User u JOIN u.blockedUsers b 
         WHERE b = :currentUser
     )
+    AND p.creator.isBanned = false
 """)
     Page<Post> findAllNotBlocked(Pageable pageable, User currentUser);
 
@@ -44,6 +44,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
         FROM User u JOIN u.blockedUsers b 
         WHERE b = :currentUser
     )
+    AND p.creator.isBanned = false
     AND (LOWER(p.title) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
     OR LOWER(p.topic.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
     OR LOWER(p.creator.username) LIKE LOWER(CONCAT('%', :searchQuery, '%')))

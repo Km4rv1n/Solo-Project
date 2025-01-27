@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.Objects;
 
 @Controller
@@ -40,10 +41,18 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String login(@RequestParam(value="error", required=false) String error, @RequestParam(value="logout", required=false) String logout,@RequestParam(value = "success", required = false) String success, Model model) {
+    public String login(@RequestParam(value="error", required=false) String error,
+                        @RequestParam(value="logout", required=false) String logout,
+                        @RequestParam(value = "success", required = false) String success,
+                        @RequestParam(value = "banned", required = false) String banned, Model model) {
         if(Objects.nonNull(error)) {
             model.addAttribute("errorMessage", "Invalid Credentials, Please try again.");
         }
+
+        if(Objects.nonNull(banned)) {
+            model.addAttribute("bannedMessage", "This account has been banned.");
+        }
+
         if(Objects.nonNull(logout)) {
             model.addAttribute("logoutMessage", "Logout Successful!");
         }

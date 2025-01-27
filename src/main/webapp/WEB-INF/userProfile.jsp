@@ -41,6 +41,17 @@
         <ul>
             <li><a href="/user/home/1">Home</a></li>
             <li><a href="/posts/new">Create a Post</a></li>
+            <li><a href="/user/blocked">Blocked Users</a>&nbsp;<span><c:out
+                    value="${currentUser.blockedUsers.size()}"/></span></li>
+            <li><a href="/posts/logged-user/1">My Posts</a>&nbsp;<span><c:out
+                    value="${currentUser.posts.size()}"/></span></li>
+            <c:if test="${currentUser.role == 'ROLE_ADMIN'}">
+                <li><a href="/admin/dashboard/1">Admin Dashboard</a></li>
+                <li><a href="/admin/reports/1">Reports</a></li>
+            </c:if>
+            <c:if test="${currentUser.role == 'ROLE_USER'}">
+                <li><a href="/user/my-reports/1">My Reports</a></li>
+            </c:if>
         </ul>
     </details>
 
@@ -59,14 +70,17 @@
             <input type="submit" value="Block">
         </form>
 
-        <c:choose>
-            <c:when test="${currentUser.role == 'ROLE_USER'}">
-                report
-            </c:when>
-            <c:otherwise>
-                ban
-            </c:otherwise>
-        </c:choose>
+        <c:if test="${currentUser.role == 'ROLE_USER'}">
+            <a href="/user/report/${user.id}">Report User</a>
+        </c:if>
+
+        <c:if test="${currentUser.role == 'ROLE_ADMIN'}">
+            <form method="post" action="/admin/ban/${user.id}">
+                <input type="hidden" name="_method" value="put">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="submit" value="Ban">
+            </form>
+        </c:if>
     </section>
 </section>
 

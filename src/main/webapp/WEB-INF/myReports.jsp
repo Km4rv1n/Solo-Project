@@ -1,19 +1,17 @@
 <%--
   Created by IntelliJ IDEA.
   User: marvinkika
-  Date: 22.1.25
-  Time: 8:37 PM
+  Date: 27.1.25
+  Time: 9:18 AM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page isErrorPage="true" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <html>
-<html>
 <head>
-    <title>New Post</title>
+    <title>MyReports</title>
     <link type="text/css" rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -56,38 +54,42 @@
         </ul>
     </details>
 
-    <fieldset>
-        <legend>Create a Post</legend>
-        <form:form method="post" action="/posts/new" modelAttribute="blogPost" enctype="multipart/form-data">
-            <p><form:errors path="*"/></p>
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <p>
-                <form:label path="title">Title:</form:label>
-                <form:input path="title"/>
-            </p>
-            <p>
-                <label>Topic:</label>
-                <form:input path="topic.name" list="listOfTopics" autocomplete="false"/>
-                <datalist id="listOfTopics">
-                    <c:forEach var="topic" items="${allTopics}">
-                        <option><c:out value="${topic.name}"/></option>
+    <table border="1">
+        <caption><strong>My Reports</strong></caption>
+        <thead>
+            <tr>
+                <th>Reported User</th>
+                <th>Report Date</th>
+                <th>Reason</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:choose>
+                <c:when test="${userReports.content.size() != 0}">
+                    <c:forEach var="report" items="${userReports.content}">
+                        <tr>
+                            <td><a href="/user/${report.reportedUser.id}"><c:out value="${report.reportedUser.username}"/></a></td>
+                            <td><c:out value="${report.formattedReportDate}"/></td>
+                            <td><c:out value="${report.reason}"/></td>
+                            <td><c:set var="statusString" value="${report.status.toString()}" />
+                                <p>${fn:replace(statusString, 'STATUS_', '')}</p></td>
+                        </tr>
                     </c:forEach>
-                </datalist>
-            </p>
-            <p>
-                <label>Image (optional):</label>
-                <input type="file" name="postImageFile" accept="image/png, image/jpeg, image/jpg">
-            </p>
-            <p>
-                <form:label path="description">Description:</form:label>
-                <form:textarea path="description"/>
-            </p>
-            <input type="submit" value="Submit">
-        </form:form>
-    </fieldset>
 
+                    <c:forEach begin="1" end="${totalPages}" var="index">
+                        <a href="/user/my-reports/${index}">${index}</a>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <tr>
+                        <td colspan="4">No reports found!</td>
+                    </tr>
+                </c:otherwise>
+            </c:choose>
+        </tbody>
+    </table>
 </section>
-
 <footer>
     <span>&copy; <span id="currentYear"></span> BlogHub. All rights reserved.</span>
 </footer>

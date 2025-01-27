@@ -1,8 +1,10 @@
 package com.marvin.example.blogapp.controllers;
 
 import com.marvin.example.blogapp.models.Post;
+import com.marvin.example.blogapp.models.Report;
 import com.marvin.example.blogapp.models.User;
 import com.marvin.example.blogapp.services.PostService;
+import com.marvin.example.blogapp.services.ReportService;
 import com.marvin.example.blogapp.services.TopicService;
 import com.marvin.example.blogapp.services.UserService;
 import com.marvin.example.blogapp.validators.UserValidator;
@@ -37,12 +39,15 @@ public class UserController {
     private final UserDetailsService userDetailsService;
     private final TopicService topicService;
     private final PostService postService;
-    public UserController(UserService userService, UserValidator userValidator, UserDetailsService userDetailsService, TopicService topicService, PostService postService) {
+    private final ReportService reportService;
+
+    public UserController(UserService userService, UserValidator userValidator, UserDetailsService userDetailsService, TopicService topicService, PostService postService, ReportService reportService) {
         this.userService = userService;
         this.userValidator = userValidator;
         this.userDetailsService = userDetailsService;
         this.topicService = topicService;
         this.postService = postService;
+        this.reportService = reportService;
     }
 
     @GetMapping("/home/{pageNumber}")
@@ -161,10 +166,44 @@ public class UserController {
     }
 
     @DeleteMapping("/unblock/{id}")
-    public String unblockUser(Principal principal, Model model,@PathVariable Integer id) {
+    public String unblockUser(Principal principal, Model model, @PathVariable Integer id) {
         User currentUser = userService.findByEmail(principal.getName());
         User user = userService.findById(id);
         userService.unblockUser(currentUser,user);
         return "redirect:/user/home/1";
+    }
+
+    @GetMapping("/report/{userId}")
+    public String showReportUserForm(@ModelAttribute("report") Report report, Principal principal, Model model, @PathVariable("userId") Integer id) {
+        User currentUser = userService.findByEmail(principal.getName());
+        User reportedUser = userService.findById(id);
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("reportedUser", reportedUser);
+        return "reportUser";
+    }
+
+    @PostMapping("/report/{userId}")
+    public String reportUser(@Valid @ModelAttribute("report") Report report, BindingResult bindingResult, Principal principal, Model model,@PathVariable("userId") Integer id) {
+
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("currentUser",  userService.findByEmail(principal.getName()));
+            model.addAttribute("reportedUser", userService.findById(id));
+            return "reportUser";
+        }
+        User currentUser = userService.findByEmail(principal.getName());
+        User reportedUser = userService.findById(id);
+        reportService.createReport(currentUser,reportedUser,report);
+        return "redirect:/user/home/1";
+    }
+
+    @GetMapping("/my-reports/{pageNumber}")
+    public String showMyReports(Principal principal, Model model, @PathVariable("pageNumber") int pageNumber) {
+        User currentUser = userService.findByEmail(principal.getName());
+        Page<Report> userReports = reportService.getUserReports(pageNumber-1,currentUser);
+        int totalPages = userReports.getTotalPages();
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("userReports", userReports);
+        model.addAttribute("totalPages", totalPages);
+        return "myReports";
     }
 }
