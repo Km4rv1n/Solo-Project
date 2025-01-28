@@ -17,6 +17,7 @@
     <link type="text/css" rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+
 <nav>
     <h1>BlogHub</h1>
     <form method="get" action="/posts/search/1">
@@ -30,11 +31,23 @@
         <span><c:out value="${currentUser.username}"/></span>
     </a>
 
+    <div>
+        <label for="languageSelect">Translate to: </label>
+        <select id="languageSelect">
+            <option value="sq">🇦🇱&emsp;Albanian</option>
+            <option value="en">🇺🇸&emsp;English</option>
+            <option value="fr">🇫🇷&emsp;French</option>
+            <option value="de">🇩🇪&emsp;German</option>
+            <option value="es">🇪🇸&emsp;Spanish</option>
+        </select>
+    </div>
+
     <form method="post" action="/logout">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <input type="submit" value="Logout">
     </form>
 </nav>
+
 <section class="middle">
     <details open>
         <summary>Menu</summary>
