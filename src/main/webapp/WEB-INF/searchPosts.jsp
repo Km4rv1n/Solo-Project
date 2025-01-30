@@ -93,8 +93,8 @@
                             </c:choose>
                         </p>
                         <div>
-                            <p><c:out value="${post.likedBy.size()}"/> likes</p>
-                            <p><c:out value="${post.comments.size()}"/> comments</p>
+                            <p><c:out value="${filteredLikesCount[post.id]}"/> likes</p>
+                            <p><c:out value="${filteredCommentsCount[post.id]}"/> comments</p>
                             <a href="/posts/view/${post.id}">View Full Post</a>
                         </div>
                     </div>
@@ -117,7 +117,6 @@
                 <c:forEach var="topic" items="${popularTopics}">
                     <li>
                         <a href="/posts/search/1?searchQuery=${topic.name}"><c:out value="${topic.name}"/>
-                            &nbsp;<span>(<c:out value="${topic.posts.size()}"/>)</span>
                         </a>
                     </li>
                 </c:forEach>

@@ -97,13 +97,13 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${user.banned == false}">
-                                        <form method="post" action="/admin/ban/${user.id}">
+                                        <form method="post" action="/admin/ban/${user.id}?currentPage=${currentPage}">
                                             <input type="hidden" name="_method" value="put">
                                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                             <input type="submit" value="Ban">
                                         </form>
                                         <c:if test="${user.role == 'ROLE_USER'}">
-                                            <form method="post" action="/admin/promote/${user.id}">
+                                            <form method="post" action="/admin/promote/${user.id}?currentPage=${currentPage}">
                                                 <input type="hidden" name="_method" value="put">
                                                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                                 <input type="submit" value="Promote to Admin">
@@ -111,7 +111,7 @@
                                         </c:if>
                                     </c:when>
                                     <c:otherwise>
-                                        <form method="post" action="/admin/unban/${user.id}">
+                                        <form method="post" action="/admin/unban/${user.id}?currentPage=${currentPage}">
                                             <input type="hidden" name="_method" value="put">
                                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                             <input type="submit" value="Unban">
@@ -122,9 +122,14 @@
                             </td>
                         </tr>
                     </c:forEach>
-                    <c:forEach begin="1" end="${totalPages}" var="index">
-                        <a href="/admin/dashboard/${index}">${index}</a>
-                    </c:forEach>
+                    <div>
+                        <c:forEach begin="1" end="${totalPages}" var="index">
+                            <a href="/admin/dashboard/${index}">${index}</a>
+                        </c:forEach>
+                    </div>
+
+
+
                 </c:when>
                 <c:otherwise>
                     <tr>

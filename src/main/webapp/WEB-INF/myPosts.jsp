@@ -68,10 +68,13 @@
 
     <section>
         <h3>My Posts</h3>
-
+        <c:if test="${not empty message}">
+            <p><c:out value="${message}"/></p>
+        </c:if>
         <c:choose>
             <c:when test="${userPosts.content.size() != 0}">
                 <ul>
+
                     <c:forEach var="post" items="${userPosts.content}">
                         <li>
                             <h4><c:out value="${post.title}"/></h4>
@@ -94,7 +97,7 @@
                                     <input type="submit" value="Cancel">
                                 </form>
 
-                                <form method="post" action="/posts/delete/${post.id}">
+                                <form method="post" action="/posts/delete/${post.id}?currentPage=${currentPage}">
                                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                     <input type="hidden" name="_method" value="delete">
                                     <input type="submit" value="Delete">

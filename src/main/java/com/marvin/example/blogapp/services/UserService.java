@@ -1,6 +1,7 @@
 package com.marvin.example.blogapp.services;
 
 import com.marvin.example.blogapp.enums.Role;
+import com.marvin.example.blogapp.exceptions.UserNotFoundException;
 import com.marvin.example.blogapp.models.User;
 import com.marvin.example.blogapp.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -53,7 +55,7 @@ public class UserService {
      * @return the User entity associated with the given username, or null if no user with the specified username exists
      */
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
     }
 
     /**
@@ -62,7 +64,7 @@ public class UserService {
      * @return the user object with the given id, or throw an exception if the object is not found
      */
     public User findById(Integer id) {
-        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException(id.toString()));
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
     }
 
     /**
@@ -90,7 +92,7 @@ public class UserService {
      * @param email
      */
     public void updateLastSeen(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
         user.setLastSeen(LocalDateTime.now());
         userRepository.save(user);
     }
@@ -100,9 +102,9 @@ public class UserService {
      * @param currentUser
      * @return page of users who are not in a blocking relationship with the current user, and are not the current user themselves
      */
-    public Page<User> getNotBlockedUsersPage(int pageNumber, User currentUser) {
+    public Page<User> getNotBlockedUsersPageIncludingBanned(int pageNumber, User currentUser) {
         PageRequest pageRequest = PageRequest.of(pageNumber, 2, Sort.Direction.DESC, "createdAt");
-        return userRepository.findAllNotBlocked(pageRequest,currentUser);
+        return userRepository.findAllNotBlockedExcludingSelfIncludingBanned(pageRequest,currentUser);
     }
 
     /**
@@ -131,5 +133,26 @@ public class UserService {
         user.setBanned(false);
         userRepository.save(user);
     }
+
+    /**
+     *
+     * @param users
+     * @param currentUser
+     * @return a list of users that are not in a blocking relationship with the current users, including the current user
+     */
+    public List<User> filterNotBlockedUsersIncludingSelf(List<User> users, User currentUser) {
+        return userRepository.findAllNotBlockedIncludingSelf(users,currentUser);
+    }
+
+    /**
+     *
+     * @param users
+     * @param currentUser
+     * @return a list of users that are not in a blocking relationship with the current users, including the current user
+     */
+    public List<User> filterNotBlockedUsersExcludingSelf(List<User> users, User currentUser) {
+        return userRepository.findAllNotBlockedExcludingSelf(users,currentUser);
+    }
+
 }
 

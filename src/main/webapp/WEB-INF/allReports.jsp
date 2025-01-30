@@ -85,20 +85,29 @@
                     <c:forEach var="report" items="${reports.content}">
                         <tr>
                             <td><a href="/user/${report.reporter.id}"><c:out value="${report.reporter.username}"/></a></td>
-                            <td><a href="/user/${report.reportedUser.id}"><c:out value="${report.reportedUser.username}"/></a></td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${report.reportedUser.banned}">
+                                        <c:out value="${report.reportedUser.username}"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="/user/${report.reportedUser.id}"><c:out value="${report.reportedUser.username}"/></a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
                             <td><c:out value="${report.formattedReportDate}"/></td>
                             <td><c:out value="${report.reason}"/></td>
                             <td><c:set var="statusString" value="${report.status.toString()}" />
                                 <p>${fn:replace(statusString, 'STATUS_', '')}</p></td>
                             <td><c:choose>
                                 <c:when test="${report.status == 'STATUS_PENDING'}">
-                                    <form method="post" action="/admin/reports/accept/${report.id}">
+                                    <form method="post" action="/admin/reports/accept/${report.id}?currentPage=${currentPage}">
                                         <input type="hidden" name="_method" value="put">
                                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                         <input type="submit" value="Ban Reported User">
                                     </form>
 
-                                    <form method="post" action="/admin/reports/reject/${report.id}">
+                                    <form method="post" action="/admin/reports/reject/${report.id}?currentPage=${currentPage}">
                                         <input type="hidden" name="_method" value="put">
                                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                         <input type="submit" value="Reject Report">

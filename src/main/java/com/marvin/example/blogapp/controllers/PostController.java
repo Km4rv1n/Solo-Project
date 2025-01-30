@@ -10,12 +10,14 @@ import com.marvin.example.blogapp.services.TopicService;
 import com.marvin.example.blogapp.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +26,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -99,13 +104,24 @@ public class PostController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("userPosts", postsOfCurrentUser);
         model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", pageNumber);
         return "myPosts";
     }
 
     @DeleteMapping("/delete/{id}")
-    public String deletePost(@PathVariable("id") Integer id) {
+    public String deletePost(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes, @RequestParam("currentPage") int currentPage, Model model, Principal principal) {
+        User currentUser = userService.findByEmail(principal.getName());
         postService.deletePostById(id);
-        return "redirect:/posts/logged-user/1";
+        Page<Post> postsOnCurrentPage = postService.postsPerPageByCreator(currentPage - 1, currentUser);
+        boolean isPageEmpty = postsOnCurrentPage.getContent().isEmpty();
+
+        if (isPageEmpty && currentPage > 1) {
+            return "redirect:/posts/logged-user/" + (currentPage - 1);
+        } else {
+            model.addAttribute("isPageEmpty", isPageEmpty);
+            redirectAttributes.addFlashAttribute("message", "Post deleted successfully.");
+            return "redirect:/posts/logged-user/" + currentPage;
+        }
     }
 
     @GetMapping("/edit/{id}")
@@ -169,22 +185,34 @@ public class PostController {
     @GetMapping("/search/{pageNumber}")
     public String searchPosts(Model model, Principal principal, @RequestParam(value = "searchQuery") String searchQuery, @PathVariable("pageNumber") int pageNumber) {
         User currentUser = userService.findByEmail(principal.getName());
-        model.addAttribute("currentUser", currentUser);
-        model.addAttribute("popularTopics", topicService.getTop10Topics());
 
         Page<Post> posts = postService.findByQuery(pageNumber-1,searchQuery,currentUser);
+        Map<Integer, Integer> filteredLikesCount = postService.getFilteredLikesCount(posts.stream().toList(), currentUser);
+        Map<Integer, Integer> filteredCommentsCount = postService.getFilteredCommentsCount(posts.stream().toList(), currentUser);
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("popularTopics", topicService.getTop10Topics(currentUser));
         model.addAttribute("searchQuery", searchQuery);
         model.addAttribute("posts", posts);
         model.addAttribute("totalPages", posts.getTotalPages());
+        model.addAttribute("filteredLikesCount", filteredLikesCount);
+        model.addAttribute("filteredCommentsCount", filteredCommentsCount);
         return "searchPosts";
     }
 
     @GetMapping("/view/{id}")
-    public String viewPost(@PathVariable("id") Integer id, Model model, Principal principal) {
+    public String viewPost(@PathVariable("id") Integer id, Model model, Principal principal, Sort sort) {
         User currentUser = userService.findByEmail(principal.getName());
         Post post = postService.findPostById(id);
+
+        List<User> filteredListOfLikes = userService.filterNotBlockedUsersIncludingSelf(post.getLikedBy().stream().toList(),currentUser);
+        List<User> filteredCommentAuthors = userService.filterNotBlockedUsersIncludingSelf(post.getComments().stream().map(Comment::getAuthor).toList(), currentUser);
+        List<Comment> filteredListOfComments = post.getComments().stream().filter(comment -> filteredCommentAuthors.contains(comment.getAuthor())).sorted(Comparator.comparing(Comment::getCreatedAt).reversed()).toList();
+
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("post", post);
+        model.addAttribute("filteredListOfLikes", filteredListOfLikes);
+        model.addAttribute("filteredListOfComments", filteredListOfComments);
         model.addAttribute("comment", new Comment());
         return "viewPost";
     }

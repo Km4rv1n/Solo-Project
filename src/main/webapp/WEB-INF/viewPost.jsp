@@ -20,7 +20,7 @@
     <h1>BlogHub</h1>
     <form method="get" action="/posts/search/1">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="search" placeholder="Search by Topic, Author or Title..." name="searchQuery" value="${searchQuery}">
+        <input type="search" placeholder="Search by Topic, Author or Title..." name="searchQuery">
         <input type="submit" value="&#128270;">
     </form>
 
@@ -78,14 +78,14 @@
         <p><c:out value="${post.description}"/></p>
         <div>
             <p>
-                <a href="#" id="show-likes-modal"><c:out value="${post.likedBy.size()}"/> likes</a>
+                <a href="#" id="show-likes-modal"><c:out value="${filteredListOfLikes.size()}"/> likes</a>
 
                 <dialog id="likes-modal">
                     <h3>Likes</h3>
                     <ul id="list-of-likes">
                         <c:choose>
-                            <c:when test="${post.likedBy.size() != 0}">
-                                <c:forEach var="user" items="${post.likedBy}">
+                            <c:when test="${filteredListOfLikes.size() != 0}">
+                                <c:forEach var="user" items="${filteredListOfLikes}">
                                     <li>
                                         <a href="/user/${user.id}">
                                             <img src="${user.profilePictureUrl}" class="profile-icon">
@@ -124,11 +124,11 @@
 
 
         <section class="comments-section">
-            <h4>Comments (<c:out value="${post.comments.size()}"/>)</h4>
+            <h4>Comments (<c:out value="${filteredListOfComments.size()}"/>)</h4>
             <section class="all-comments">
                 <c:choose>
                     <c:when test="${post.comments.size() != 0}">
-                        <c:forEach var="comment" items="${post.comments}">
+                        <c:forEach var="comment" items="${filteredListOfComments}">
                             <div>
                                 <img src="${comment.author.profilePictureUrl}" class="profile-icon">
                                 <h4><c:out value="${comment.author.username}"/></h4>

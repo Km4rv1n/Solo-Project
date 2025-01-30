@@ -1,6 +1,7 @@
 package com.marvin.example.blogapp.services;
 
 import com.marvin.example.blogapp.models.Topic;
+import com.marvin.example.blogapp.models.User;
 import com.marvin.example.blogapp.repositories.TopicRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,8 @@ public class TopicService {
      *
      * @return a list containing the top 10 topics with the highest number of posts
      */
-    public List<Topic> getTop10Topics() {
-        return topicRepository.findTop10ByPostCount();
+    public List<Topic> getTop10Topics(User currentUser) {
+        return topicRepository.findTop10ByPostCount(currentUser);
     }
 
     /**

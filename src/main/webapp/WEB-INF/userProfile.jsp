@@ -20,7 +20,7 @@
     <h1>BlogHub</h1>
     <form method="get" action="/posts/search/1">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="search" placeholder="Search by Topic, Author or Title..." name="searchQuery" value="${searchQuery}">
+        <input type="search" placeholder="Search by Topic, Author or Title..." name="searchQuery">
         <input type="submit" value="&#128270;">
     </form>
 

@@ -7,10 +7,7 @@ import com.marvin.example.blogapp.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -29,36 +26,37 @@ public class AdminController {
     @GetMapping("/dashboard/{pageNumber}")
     public String showAdminDashboard(Principal principal, @PathVariable("pageNumber") int pageNumber, Model model) {
         User currentUser = userService.findByEmail(principal.getName());
-        Page<User> users = userService.getNotBlockedUsersPage(pageNumber-1,currentUser);
+        Page<User> users = userService.getNotBlockedUsersPageIncludingBanned(pageNumber-1,currentUser);
         int totalPages = users.getTotalPages();
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("users", users);
         model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", pageNumber);
         return "adminDashboard";
     }
 
     @PutMapping("/promote/{id}")
-    public String promoteUser(@PathVariable("id") Integer id, Principal principal, Model model) {
+    public String promoteUser(@PathVariable("id") Integer id, Principal principal, Model model,@RequestParam("currentPage") int currentPage) {
         User user = userService.findById(id);
         model.addAttribute("currentUser",  userService.findByEmail(principal.getName()));
         userService.promoteToAdmin(user);
-        return "redirect:/admin/dashboard/1";
+        return "redirect:/admin/dashboard/"+currentPage;
     }
 
     @PutMapping("/ban/{id}")
-    public String banUser(@PathVariable("id") Integer id, Principal principal, Model model) {
+    public String banUser(@PathVariable("id") Integer id, Principal principal, Model model, @RequestParam("currentPage") int currentPage) {
         User user = userService.findById(id);
         model.addAttribute("currentUser",  userService.findByEmail(principal.getName()));
         userService.banUser(user);
-        return "redirect:/admin/dashboard/1";
+        return "redirect:/admin/dashboard/" + currentPage;
     }
 
     @PutMapping("/unban/{id}")
-    public String unbanUser(@PathVariable("id") Integer id, Principal principal, Model model) {
+    public String unbanUser(@PathVariable("id") Integer id, Principal principal, Model model,@RequestParam("currentPage") int currentPage) {
         User user = userService.findById(id);
         model.addAttribute("currentUser",  userService.findByEmail(principal.getName()));
         userService.unbanUser(user);
-        return "redirect:/admin/dashboard/1";
+        return "redirect:/admin/dashboard/"+currentPage;
     }
 
     @GetMapping("/reports/{pageNumber}")
@@ -69,22 +67,23 @@ public class AdminController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("reports", reports);
         model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", pageNumber);
         return "allReports";
     }
 
     @PutMapping("/reports/reject/{id}")
-    public String rejectReport(@PathVariable("id") Integer id, Principal principal, Model model) {
+    public String rejectReport(@PathVariable("id") Integer id, Principal principal, Model model, @RequestParam("currentPage") int currentPage) {
         model.addAttribute("currentUser",  userService.findByEmail(principal.getName()));
         Report report = reportService.findById(id);
         reportService.rejectReport(report);
-        return "redirect:/admin/reports/1";
+        return "redirect:/admin/reports/"+currentPage;
     }
 
     @PutMapping("/reports/accept/{id}")
-    public String acceptReport(@PathVariable("id") Integer id, Principal principal, Model model) {
+    public String acceptReport(@PathVariable("id") Integer id, Principal principal, Model model, @RequestParam("currentPage") int currentPage) {
         model.addAttribute("currentUser",  userService.findByEmail(principal.getName()));
         Report report = reportService.findById(id);
         reportService.acceptReport(report);
-        return "redirect:/admin/reports/1";
+        return "redirect:/admin/reports/"+currentPage;
     }
 }

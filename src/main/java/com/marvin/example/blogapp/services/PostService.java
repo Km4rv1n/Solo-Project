@@ -1,5 +1,7 @@
 package com.marvin.example.blogapp.services;
 
+import com.marvin.example.blogapp.exceptions.PostNotFoundException;
+import com.marvin.example.blogapp.models.Comment;
 import com.marvin.example.blogapp.models.Post;
 import com.marvin.example.blogapp.models.User;
 import com.marvin.example.blogapp.repositories.PostRepository;
@@ -8,11 +10,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class PostService {
     private final PostRepository postRepository;
-    public PostService(PostRepository postRepository) {
+    private final UserService userService;
+
+    public PostService(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
+        this.userService = userService;
     }
     /**
      * persist or update the given post in the database
@@ -21,7 +31,6 @@ public class PostService {
     public void addPost(Post post) {
         postRepository.save(post);
     }
-
 
     /**
      *
@@ -52,7 +61,7 @@ public class PostService {
      * @return the post object associated with the given id
      */
     public Post findPostById(Integer id) {
-        return postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Could not find the post you were looking for."));
     }
 
     /**
@@ -86,5 +95,40 @@ public class PostService {
     public void unlikePost(Post post, User user) {
         post.getLikedBy().remove(user);
         postRepository.save(post);
+    }
+
+    /**
+     * @param posts
+     * @param currentUser
+     * @return a map containing the number of likes for each post after applying filtering according to the list of users that
+     * are in a blocking relationship with the current user, or users that are banned
+     */
+    public Map<Integer, Integer> getFilteredLikesCount(List<Post> posts, User currentUser) {
+        Map<Integer, Integer> filteredLikesCount = new HashMap<>();
+        for (Post post : posts) {
+            int count = userService.filterNotBlockedUsersIncludingSelf(post.getLikedBy().stream().toList(), currentUser).size();
+            filteredLikesCount.put(post.getId(),count);
+        }
+        return filteredLikesCount;
+    }
+
+    /**
+     *
+     * @param posts
+     * @param currentUser
+     * @return a map containing the number of comments for each post after applying filtering according to the list of users that
+     * are in a blocking relationship with the current user, or users that are banned
+     */
+    public Map<Integer,Integer> getFilteredCommentsCount(List<Post> posts, User currentUser) {
+        Map<Integer, Integer> filteredCommentsCount = new HashMap<>();
+
+        for (Post post : posts) {
+            List<User> authors = post.getComments().stream().map(Comment::getAuthor).toList();
+            List<User> filteredAuthors = userService.filterNotBlockedUsersIncludingSelf(authors, currentUser);
+
+            int count = (int) post.getComments().stream().filter(comment -> filteredAuthors.contains(comment.getAuthor())).count();
+            filteredCommentsCount.put(post.getId(), count);
+        }
+        return filteredCommentsCount;
     }
 }

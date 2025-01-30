@@ -1,5 +1,6 @@
 package com.marvin.example.blogapp.controllers;
 
+import com.marvin.example.blogapp.exceptions.UserNotFoundException;
 import com.marvin.example.blogapp.models.Post;
 import com.marvin.example.blogapp.models.Report;
 import com.marvin.example.blogapp.models.User;
@@ -29,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -54,9 +56,14 @@ public class UserController {
     public String home(Principal principal, Model model, @PathVariable("pageNumber") int pageNumber) {
         User currentUser = userService.findByEmail(principal.getName());
         model.addAttribute("currentUser", currentUser);
-        model.addAttribute("popularTopics", topicService.getTop10Topics());
+        model.addAttribute("popularTopics", topicService.getTop10Topics(currentUser));
+
         Page<Post> posts = postService.postsPerPage(pageNumber-1, currentUser);
         int totalPages = posts.getTotalPages();
+        Map<Integer, Integer> filteredLikesCount = postService.getFilteredLikesCount(posts.stream().toList(), currentUser);
+        Map<Integer, Integer> filteredCommentsCount = postService.getFilteredCommentsCount(posts.stream().toList(), currentUser);
+        model.addAttribute("filteredLikesCount", filteredLikesCount);
+        model.addAttribute("filteredCommentsCount", filteredCommentsCount);
         model.addAttribute("posts", posts);
         model.addAttribute("totalPages", totalPages);
         return "home";
@@ -99,7 +106,6 @@ public class UserController {
                 }
 
                 try (InputStream inputStream = multipartFile.getInputStream()) {
-                    // construct file path
                     Path filePath = uploadPath.resolve(uniqueFileName);
                     Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
@@ -108,7 +114,6 @@ public class UserController {
             }
         }
         else {
-        // Retain the existing profile picture URL if no new picture is uploaded
             user.setProfilePictureUrl(existingUser.getProfilePictureUrl());
         }
 
@@ -136,8 +141,8 @@ public class UserController {
         User currentUser = userService.findByEmail(principal.getName());
         User user = userService.findById(id);
 
-        if (currentUser.getBlockedUsers().contains(user) || user.getBlockedUsers().contains(currentUser)) {
-            throw new UsernameNotFoundException("User not found!");
+        if (currentUser.getBlockedUsers().contains(user) || user.getBlockedUsers().contains(currentUser) || user.isBanned()) {
+            throw new UserNotFoundException("User Not Found!");
         }
 
         if(currentUser.equals(user)){
@@ -170,7 +175,7 @@ public class UserController {
         User currentUser = userService.findByEmail(principal.getName());
         User user = userService.findById(id);
         userService.unblockUser(currentUser,user);
-        return "redirect:/user/home/1";
+        return "redirect:/user/blocked";
     }
 
     @GetMapping("/report/{userId}")

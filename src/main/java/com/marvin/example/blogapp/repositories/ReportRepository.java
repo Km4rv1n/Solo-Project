@@ -47,10 +47,8 @@ public interface ReportRepository extends PagingAndSortingRepository<Report, Int
         FROM User u JOIN u.blockedUsers b
         WHERE b = :currentUser
     )AND r.reporter.isBanned = false
-     AND r.reportedUser.isBanned = false
     """)
     Page<Report> findAllReports(Pageable pageable, @Param("currentUser") User currentUser);
 
     Optional<Report> findById(Integer id);
 }
-
