@@ -15,94 +15,125 @@
 <head>
     <title>Search</title>
     <link type="text/css" rel="stylesheet" href="/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
 
-<nav>
-    <h1>BlogHub</h1>
-    <form method="get" action="/posts/search/1">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="search" placeholder="Search by Topic, Author or Title..." name="searchQuery" value="${searchQuery}">
-        <input type="submit" value="&#128270;">
-    </form>
-
-    <a href="/user/personal-profile">
-        <img src="${currentUser.profilePictureUrl}" class="profile-icon" alt="profile-picture">
-        <span><c:out value="${currentUser.username}"/></span>
-    </a>
-
-    <div>
-        <label for="languageSelect">Translate to: </label>
-        <select id="languageSelect">
-            <option value="sq">🇦🇱&emsp;Albanian</option>
-            <option value="en">🇺🇸&emsp;English</option>
-            <option value="fr">🇫🇷&emsp;French</option>
-            <option value="de">🇩🇪&emsp;German</option>
-            <option value="es">🇪🇸&emsp;Spanish</option>
-        </select>
-    </div>
-
-    <form method="post" action="/logout">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="submit" value="Logout">
-    </form>
+<nav class="navbar navbar-expand-lg navbar-light bg-primary border-bottom px-5 py-3 mb-5 text-white">
+    <ul class="navbar-nav w-100 d-flex justify-content-between align-items-center">
+        <li class="nav-item">
+            <h1 class="navbar-brand mb-0 fs-3 text-white">BlogHub<small class="fw-light">&trade;</small></h1>
+        </li>
+        <li class="nav-item">
+            <form method="get" action="/posts/search/1" class="d-flex">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="search" class="form-control me-2" placeholder="Search by Topic, Author or Title..."
+                       name="searchQuery" value="${searchQuery}">
+                <button type="submit" class="btn btn-dark">Search</button>
+            </form>
+        </li>
+        <li class="nav-item">
+            <label for="languageSelect" class="me-1">Translate to: </label>
+            <select id="languageSelect" class="form-select form-select-sm d-inline w-auto">
+                <option value="sq">🇦🇱&emsp;Albanian</option>
+                <option value="en">🇺🇸&emsp;English</option>
+                <option value="fr">🇫🇷&emsp;French</option>
+                <option value="de">🇩🇪&emsp;German</option>
+                <option value="es">🇪🇸&emsp;Spanish</option>
+            </select>
+        </li>
+        <li class="nav-item">
+            <a href="/user/personal-profile" class="d-flex align-items-center text-decoration-none text-dark">
+                <img src="${currentUser.profilePictureUrl}" class="rounded-circle me-2" alt="profile-picture" width="40"
+                     height="40">
+                <span class="text-white"><c:out value="${currentUser.username}"/></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form method="post" action="/logout">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="submit" class="btn btn-danger btn-sm text-white" value="Log out">
+            </form>
+        </li>
+    </ul>
 </nav>
 
-<section class="middle">
+<h2 class="text-center">Search results for: <c:out value="${searchQuery}"/></h2>
+
+<section class="d-flex justify-content-between px-5">
     <details open>
-        <summary>Menu</summary>
-        <ul>
-            <li><a href="/user/home/1">Home</a></li>
-            <li><a href="/posts/new">Create a Post</a></li>
-            <li><a href="/user/blocked">Blocked Users</a>&nbsp;<span><c:out
+        <summary class="menu-summary bg-primary text-white p-2 rounded-top text-center fw-bold">Menu</summary>
+        <ul class="menu-list list-unstyled">
+            <li class="border p-2 text-center"><a href="/user/home/1">Home</a></li>
+            <li class="border p-2 text-center"><a href="/posts/new">Create a Post</a></li>
+            <li class="border p-2 text-center"><a href="/user/blocked">Blocked Users</a>&emsp;<span
+                    class="badge bg-danger"><c:out
                     value="${currentUser.blockedUsers.size()}"/></span></li>
-            <li><a href="/posts/logged-user/1">My Posts</a>&nbsp;<span><c:out
+            <li class="border p-2 text-center"><a href="/posts/logged-user/1">My Posts</a>&emsp;<span
+                    class="badge bg-primary"><c:out
                     value="${currentUser.posts.size()}"/></span></li>
             <c:if test="${currentUser.role == 'ROLE_ADMIN'}">
-                <li><a href="/admin/dashboard/1">Admin Dashboard</a></li>
-                <li><a href="/admin/reports/1">Reports</a></li>
+                <li class="border p-2 text-center"><a href="/admin/dashboard/1">Admin Dashboard</a></li>
+                <li class="border p-2 rounded-bottom text-center"><a href="/admin/reports/1">Reports</a></li>
             </c:if>
             <c:if test="${currentUser.role == 'ROLE_USER'}">
-                <li><a href="/user/my-reports/1">My Reports</a></li>
+                <li class="border p-2 rounded-bottom text-center"><a href="/user/my-reports/1">My Reports</a></li>
             </c:if>
         </ul>
     </details>
 
-    <section>
-        <h2>Search results for: <c:out value="${searchQuery}"/></h2>
+    <section class="w-50 mx-auto mb-4">
         <c:choose>
             <c:when test="${posts.content.size() != 0}">
                 <c:forEach var="post" items="${posts.content}">
-                    <div>
-                        <h3><c:out value="${post.title}"/></h3>
-                        <p>Topic: <c:out value="${post.topic.name}"/></p>
-                        <p><a href="/user/${post.creator.id}"><c:out value="${post.creator.username}"/>&nbsp;<img
-                                src="${post.creator.profilePictureUrl}" class="profile-icon"></a></p>
-                        <p><c:out value="${post.formattedCreatedAt}"/></p>
+                    <div class="border p-3 mb-4 rounded shadow-sm">
+                        <div class="d-flex justify-content-between">
+                            <h3 class="text-primary"><c:out value="${post.title}"/></h3>
+                            <p class="text-muted">Author: <a href="/user/${post.creator.id}"
+                                                             class="text-decoration-none"><c:out
+                                    value="${post.creator.username}"/>&nbsp;<img src="${post.creator.profilePictureUrl}"
+                                                                                 class="profile-icon rounded-circle me-2"
+                                                                                 alt="profile picture"></a></p>
+                        </div>
+
+
+                        <p><strong>Topic:</strong> <a href="/posts/search/1?searchQuery=${post.topic.name}"
+                                                      class="btn btn-secondary btn-sm"><c:out
+                                value="${post.topic.name}"/></a></p>
+                        <p class="text-muted">On <c:out value="${post.formattedCreatedAt}"/></p>
                         <c:if test="${post.imageUrl != null}">
-                            <img src="${post.imageUrl}" class="post-image">
+                            <img src="${post.imageUrl}" class="post-image img-fluid rounded mb-3 w-100"
+                                 alt="Post image">
                         </c:if>
                         <p>
                             <c:choose>
-                                <c:when test="${fn:length(post.description) > 50}">
-                                    <c:out value="${fn:substring(post.description, 0, 50)}"/>...
+                                <c:when test="${fn:length(post.description) > 100}">
+                                    <c:out value="${fn:substring(post.description, 0, 100)}"/>...
                                 </c:when>
                                 <c:otherwise>
                                     <c:out value="${post.description}"/>
                                 </c:otherwise>
                             </c:choose>
                         </p>
-                        <div>
-                            <p><c:out value="${filteredLikesCount[post.id]}"/> likes</p>
-                            <p><c:out value="${filteredCommentsCount[post.id]}"/> comments</p>
-                            <a href="/posts/view/${post.id}">View Full Post</a>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="mb-0"><strong><c:out value="${filteredLikesCount[post.id]}"/> likes</strong></p>
+                            <p class="mb-0"><strong><c:out value="${filteredCommentsCount[post.id]}"/> comments</strong>
+                            </p>
+                            <a href="/posts/view/${post.id}" class="btn btn-outline-primary btn-sm">Continue Reading
+                                &gt;&gt;</a>
                         </div>
                     </div>
                 </c:forEach>
 
-                <c:forEach begin="1" end="${totalPages}" var="index">
-                    <a href="/posts/search/${index}?searchQuery=${searchQuery}">${index}</a>
-                </c:forEach>
+                <ul class="pagination justify-content-center">
+                    <c:forEach begin="1" end="${totalPages}" var="index">
+                        <li class="page-item">
+                            <a class="page-link nav-link"
+                               href="/posts/search/${index}?searchQuery=${searchQuery}">${index}</a>
+                        </li>
+                    </c:forEach>
+                </ul>
             </c:when>
             <c:otherwise>
                 <p>No posts found!</p>
@@ -112,21 +143,20 @@
 
     <c:if test="${popularTopics.size() != 0}">
         <details open>
-            <summary>Popular Topics</summary>
-            <ul>
+            <summary class="topic-summary bg-primary text-white p-2 rounded-top text-center fw-bold">Popular Topics
+            </summary>
+            <ul class="topic-list list-unstyled">
                 <c:forEach var="topic" items="${popularTopics}">
-                    <li>
-                        <a href="/posts/search/1?searchQuery=${topic.name}"><c:out value="${topic.name}"/>
-                        </a>
+                    <li class="border p-2 text-center">
+                        <a href="/posts/search/1?searchQuery=${topic.name}"><c:out value="${topic.name}"/></a>
                     </li>
                 </c:forEach>
             </ul>
         </details>
     </c:if>
-
 </section>
 
-<footer>
+<footer class="bg-primary text-white text-center p-3">
     <span>&copy; <span id="currentYear"></span> BlogHub. All rights reserved.</span>
 </footer>
 <script src="/js/index.js"></script>

@@ -1,49 +1,75 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 100vh;
+}
+
+footer{
+    margin-top: auto;
+}
 
 .profile-icon{
     width: 50px;
     height: 50px;
-    border-radius: 50%;
+}
+
+.active{
+    background-color: grey !important;
+}
+
+input[type='search']{
+    width: 350px;
+}
+
+input[type='search']::-webkit-search-cancel-button {
+    filter: grayscale(1);
+}
+
+details{
+    width: 200px;
+}
+
+details li:hover{
+    background-color: #e8e8e8;
+}
+
+details a{
+    text-decoration: none;
 }
 
 .profile-picture{
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
+    width: 200px;
+    height: 200px;
 }
 
-.post-image{
-    height: 300px;
-    width: 400px;
-}
-nav{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.middle{
-    display: flex;
-    justify-content: space-evenly;
-}
-
-.blocked-users-section{
-    width: 300px;
-    height: 600px;
-    overflow: auto;
+dialog{
+    margin: auto;
 }
 
 #list-of-likes{
-    overflow: auto;
-    height: 300px;
-    width: 250px;
+    min-width: 300px;
+    min-height: 500px;
 }
 
-.all-comments{
-    border: 2px black solid;
-    width: 400px;
-    height: 600px;
-    overflow: auto;
+#info-btn{
+    font-family: "Times New Roman" !important;
+    border-radius: 50%;
+    padding: 0px 8px;
+    font-weight: bold;
 }
-footer{
-    text-align: center;
+
+#info-box{
+    position: fixed;
+    top: 6%;
+    left: 50%;
 }
+
+
+

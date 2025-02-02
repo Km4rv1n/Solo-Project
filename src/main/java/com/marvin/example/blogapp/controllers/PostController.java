@@ -1,5 +1,6 @@
 package com.marvin.example.blogapp.controllers;
 
+import com.marvin.example.blogapp.exceptions.PostNotFoundException;
 import com.marvin.example.blogapp.models.Comment;
 import com.marvin.example.blogapp.models.Post;
 import com.marvin.example.blogapp.models.Topic;
@@ -127,7 +128,11 @@ public class PostController {
     @GetMapping("/edit/{id}")
     public String showEditPostForm(@PathVariable("id") Integer id, Model model, Principal principal) {
         Post post = postService.findPostById(id);
-        model.addAttribute("currentUser", userService.findByEmail(principal.getName()));
+        User currentUser = userService.findByEmail(principal.getName());
+        if(!post.getCreator().equals(currentUser)) {
+            throw new PostNotFoundException("Post not found!");
+        }
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("post", post);
         model.addAttribute("allTopics", topicService.getAllTopics());
         return "editPost";
@@ -140,6 +145,10 @@ public class PostController {
         model.addAttribute("currentUser", currentUser); //for navbar
 
         Post existingPost = postService.findPostById(post.getId());
+
+        if(!existingPost.getCreator().equals(currentUser)) {
+            throw new PostNotFoundException("Post not found!");
+        }
 
         if(bindingResult.hasErrors()) {
             model.addAttribute("allTopics", topicService.getAllTopics());
@@ -235,14 +244,22 @@ public class PostController {
 
     @PostMapping("/comment/{postId}")
     public String addComment(@PathVariable("postId") Integer postId, Model model, Principal principal, @Valid @ModelAttribute("comment") Comment comment, BindingResult bindingResult) {
+
+        User currentUser = userService.findByEmail(principal.getName());
+        model.addAttribute("currentUser", currentUser);
+        Post post = postService.findPostById(postId);
+
         if(bindingResult.hasErrors()) {
+            List<User> filteredListOfLikes = userService.filterNotBlockedUsersIncludingSelf(post.getLikedBy().stream().toList(),currentUser);
+            List<User> filteredCommentAuthors = userService.filterNotBlockedUsersIncludingSelf(post.getComments().stream().map(Comment::getAuthor).toList(), currentUser);
+            List<Comment> filteredListOfComments = post.getComments().stream().filter(currentComment -> filteredCommentAuthors.contains(currentComment.getAuthor())).sorted(Comparator.comparing(Comment::getCreatedAt).reversed()).toList();
             model.addAttribute("currentUser", userService.findByEmail(principal.getName()));
-            Post post = postService.findPostById(postId);
+            model.addAttribute("filteredListOfLikes", filteredListOfLikes);
+            model.addAttribute("filteredListOfComments", filteredListOfComments);
             model.addAttribute("post", post);
             return("viewPost");
         }
-        model.addAttribute("currentUser", userService.findByEmail(principal.getName()));
-        Post post = postService.findPostById(postId);
+
         comment.setAuthor(userService.findByEmail(principal.getName()));
         post.getComments().add(comment);
         comment.setPost(post);

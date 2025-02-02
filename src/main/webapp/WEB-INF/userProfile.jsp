@@ -14,88 +14,102 @@
 <head>
     <title>View User</title>
     <link type="text/css" rel="stylesheet" href="/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
-<nav>
-    <h1>BlogHub</h1>
-    <form method="get" action="/posts/search/1">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="search" placeholder="Search by Topic, Author or Title..." name="searchQuery">
-        <input type="submit" value="&#128270;">
-    </form>
-
-    <a href="/user/personal-profile">
-        <img src="${currentUser.profilePictureUrl}" class="profile-icon" alt="profile-picture">
-        <span><c:out value="${currentUser.username}"/></span>
-    </a>
-
-    <div>
-        <label for="languageSelect">Translate to: </label>
-        <select id="languageSelect">
-            <option value="sq">🇦🇱&emsp;Albanian</option>
-            <option value="en">🇺🇸&emsp;English</option>
-            <option value="fr">🇫🇷&emsp;French</option>
-            <option value="de">🇩🇪&emsp;German</option>
-            <option value="es">🇪🇸&emsp;Spanish</option>
-        </select>
-    </div>
-
-    <form method="post" action="/logout">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="submit" value="Logout">
-    </form>
+<nav class="navbar navbar-expand-lg navbar-light bg-primary border-bottom px-5 py-3 mb-5 text-white">
+    <ul class="navbar-nav w-100 d-flex justify-content-between align-items-center">
+        <li class="nav-item">
+            <h1 class="navbar-brand mb-0 fs-3 text-white">BlogHub<small class="fw-light">&trade;</small></h1>
+        </li>
+        <li class="nav-item">
+            <form method="get" action="/posts/search/1" class="d-flex">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="search" class="form-control me-2" placeholder="Search by Topic, Author or Title..."
+                       name="searchQuery">
+                <button type="submit" class="btn btn-dark">Search</button>
+            </form>
+        </li>
+        <li class="nav-item">
+            <label for="languageSelect" class="me-1">Translate to: </label>
+            <select id="languageSelect" class="form-select form-select-sm d-inline w-auto">
+                <option value="sq">🇦🇱&emsp;Albanian</option>
+                <option value="en">🇺🇸&emsp;English</option>
+                <option value="fr">🇫🇷&emsp;French</option>
+                <option value="de">🇩🇪&emsp;German</option>
+                <option value="es">🇪🇸&emsp;Spanish</option>
+            </select>
+        </li>
+        <li class="nav-item">
+            <a href="/user/personal-profile" class="d-flex align-items-center text-decoration-none text-dark">
+                <img src="${currentUser.profilePictureUrl}" class="rounded-circle me-2" alt="profile-picture" width="40"
+                     height="40">
+                <span class="text-white"><c:out value="${currentUser.username}"/></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form method="post" action="/logout">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="submit" class="btn btn-danger btn-sm text-white" value="Log out">
+            </form>
+        </li>
+    </ul>
 </nav>
 
-<section class="middle">
+<section class="d-flex justify-content-between px-5">
     <details open>
-        <summary>Menu</summary>
-        <ul>
-            <li><a href="/user/home/1">Home</a></li>
-            <li><a href="/posts/new">Create a Post</a></li>
-            <li><a href="/user/blocked">Blocked Users</a>&nbsp;<span><c:out
+        <summary class="menu-summary bg-primary text-white p-2 rounded-top text-center fw-bold">Menu</summary>
+        <ul class="menu-list list-unstyled">
+            <li class="border p-2 text-center"><a href="/user/home/1">Home</a></li>
+            <li class="border p-2 text-center"><a href="/posts/new">Create a Post</a></li>
+            <li class="border p-2 text-center"><a href="/user/blocked">Blocked Users</a>&emsp;<span
+                    class="badge bg-danger"><c:out
                     value="${currentUser.blockedUsers.size()}"/></span></li>
-            <li><a href="/posts/logged-user/1">My Posts</a>&nbsp;<span><c:out
+            <li class="border p-2 text-center"><a href="/posts/logged-user/1">My Posts</a>&emsp;<span
+                    class="badge bg-primary"><c:out
                     value="${currentUser.posts.size()}"/></span></li>
             <c:if test="${currentUser.role == 'ROLE_ADMIN'}">
-                <li><a href="/admin/dashboard/1">Admin Dashboard</a></li>
-                <li><a href="/admin/reports/1">Reports</a></li>
+                <li class="border p-2 text-center"><a href="/admin/dashboard/1">Admin Dashboard</a></li>
+                <li class="border p-2 rounded-bottom text-center"><a href="/admin/reports/1">Reports</a></li>
             </c:if>
             <c:if test="${currentUser.role == 'ROLE_USER'}">
-                <li><a href="/user/my-reports/1">My Reports</a></li>
+                <li class="border p-2 rounded-bottom text-center"><a href="/user/my-reports/1">My Reports</a></li>
             </c:if>
         </ul>
     </details>
 
-    <section>
-        <img src="${user.profilePictureUrl}" class="profile-picture">
-        <h3><c:out value="${user.username}"/></h3>
-        <p><c:out value="${user.firstName}"/>&nbsp;<c:out value="${user.lastName}"/></p>
-        <p><c:out value="${user.email}"/></p>
-        <p>Date joined: <c:out value="${user.createdAt}"/></p>
+    <section class="container p-4 border rounded shadow-sm bg-light text-center w-50">
+        <img src="${user.profilePictureUrl}" class="profile-picture rounded-circle img-fluid mb-3">
+        <h3 class="fw-bold"><c:out value="${user.username}"/></h3>
+        <p class="text-muted"><c:out value="${user.firstName}"/>&nbsp;<c:out value="${user.lastName}"/></p>
+        <p class="text-secondary"><c:out value="${user.email}"/></p>
+        <p class="small">Date joined: <c:out value="${user.createdAt}"/></p>
+
         <c:if test="${user.lastSeen != null}">
-            <p>Last seen: <c:out value="${user.formattedLastSeen}"/></p>
+            <p class="small text-muted">Last seen: <c:out value="${user.formattedLastSeen}"/></p>
         </c:if>
 
-        <form method="post" action="/user/block/${user.id}">
+        <form method="post" action="/user/block/${user.id}" class="d-inline">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <input type="submit" value="Block">
+            <button type="submit" class="btn btn-danger">Block</button>
         </form>
 
         <c:if test="${currentUser.role == 'ROLE_USER'}">
-            <a href="/user/report/${user.id}">Report User</a>
+            <a href="/user/report/${user.id}" class="btn btn-warning ms-2">Report User</a>
         </c:if>
 
         <c:if test="${currentUser.role == 'ROLE_ADMIN'}">
-            <form method="post" action="/admin/ban/${user.id}">
+            <form method="post" action="/admin/ban/${user.id}?currentPage=1" class="d-inline">
                 <input type="hidden" name="_method" value="put">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <input type="submit" value="Ban">
+                <button type="submit" class="btn btn-danger ms-2">Ban</button>
             </form>
         </c:if>
     </section>
 </section>
 
-<footer>
+<footer class="bg-primary text-white text-center p-3">
     <span>&copy; <span id="currentYear"></span> BlogHub. All rights reserved.</span>
 </footer>
 <script src="/js/index.js"></script>

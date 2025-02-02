@@ -13,97 +13,141 @@
 <head>
     <title>MyReports</title>
     <link type="text/css" rel="stylesheet" href="/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
-<nav>
-    <h1>BlogHub</h1>
-    <form method="get" action="/posts/search/1">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="search" placeholder="Search by Topic, Author or Title..." name="searchQuery">
-        <input type="submit" value="&#128270;">
-    </form>
-
-    <a href="/user/personal-profile">
-        <img src="${currentUser.profilePictureUrl}" class="profile-icon" alt="profile-picture">
-        <span><c:out value="${currentUser.username}"/></span>
-    </a>
-
-    <div>
-        <label for="languageSelect">Translate to: </label>
-        <select id="languageSelect">
-            <option value="sq">🇦🇱&emsp;Albanian</option>
-            <option value="en">🇺🇸&emsp;English</option>
-            <option value="fr">🇫🇷&emsp;French</option>
-            <option value="de">🇩🇪&emsp;German</option>
-            <option value="es">🇪🇸&emsp;Spanish</option>
-        </select>
-    </div>
-
-    <form method="post" action="/logout">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="submit" value="Logout">
-    </form>
+<nav class="navbar navbar-expand-lg navbar-light bg-primary border-bottom px-5 py-3 mb-5 text-white">
+    <ul class="navbar-nav w-100 d-flex justify-content-between align-items-center">
+        <li class="nav-item">
+            <h1 class="navbar-brand mb-0 fs-3 text-white">BlogHub<small class="fw-light">&trade;</small></h1>
+        </li>
+        <li class="nav-item">
+            <form method="get" action="/posts/search/1" class="d-flex">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="search" class="form-control me-2" placeholder="Search by Topic, Author or Title..."
+                       name="searchQuery">
+                <button type="submit" class="btn btn-dark">Search</button>
+            </form>
+        </li>
+        <li class="nav-item">
+            <label for="languageSelect" class="me-1">Translate to: </label>
+            <select id="languageSelect" class="form-select form-select-sm d-inline w-auto">
+                <option value="sq">🇦🇱&emsp;Albanian</option>
+                <option value="en">🇺🇸&emsp;English</option>
+                <option value="fr">🇫🇷&emsp;French</option>
+                <option value="de">🇩🇪&emsp;German</option>
+                <option value="es">🇪🇸&emsp;Spanish</option>
+            </select>
+        </li>
+        <li class="nav-item">
+            <a href="/user/personal-profile" class="d-flex align-items-center text-decoration-none text-dark">
+                <img src="${currentUser.profilePictureUrl}" class="rounded-circle me-2" alt="profile-picture" width="40"
+                     height="40">
+                <span class="text-white"><c:out value="${currentUser.username}"/></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form method="post" action="/logout">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="submit" class="btn btn-danger btn-sm text-white" value="Log out">
+            </form>
+        </li>
+    </ul>
 </nav>
 
-<section class="middle">
+<h2 class="text-center">My Reports</h2>
+
+<section class="d-flex justify-content-evenly px-5">
     <details open>
-        <summary>Menu</summary>
-        <ul>
-            <li><a href="/user/home/1">Home</a></li>
-            <li><a href="/posts/new">Create a Post</a></li>
-            <li><a href="/user/blocked">Blocked Users</a>&nbsp;<span><c:out
+        <summary class="menu-summary bg-primary text-white p-2 rounded-top text-center fw-bold">Menu</summary>
+        <ul class="menu-list list-unstyled">
+            <li class="border p-2 text-center"><a href="/user/home/1">Home</a></li>
+            <li class="border p-2 text-center"><a href="/posts/new">Create a Post</a></li>
+            <li class="border p-2 text-center"><a href="/user/blocked">Blocked Users</a>&emsp;<span
+                    class="badge bg-danger"><c:out
                     value="${currentUser.blockedUsers.size()}"/></span></li>
-            <li><a href="/posts/logged-user/1">My Posts</a>&nbsp;<span><c:out
+            <li class="border p-2 text-center"><a href="/posts/logged-user/1">My Posts</a>&emsp;<span
+                    class="badge bg-primary"><c:out
                     value="${currentUser.posts.size()}"/></span></li>
             <c:if test="${currentUser.role == 'ROLE_ADMIN'}">
-                <li><a href="/admin/dashboard/1">Admin Dashboard</a></li>
-                <li><a href="/admin/reports/1">Reports</a></li>
+                <li class="border p-2 text-center"><a href="/admin/dashboard/1">Admin Dashboard</a></li>
+                <li class="border p-2 rounded-bottom text-center"><a href="/admin/reports/1">Reports</a></li>
             </c:if>
             <c:if test="${currentUser.role == 'ROLE_USER'}">
-                <li><a href="/user/my-reports/1">My Reports</a></li>
+                <li class="border p-2 rounded-bottom text-center"><a href="/user/my-reports/1">My Reports</a></li>
             </c:if>
         </ul>
     </details>
-
-    <table border="1">
-        <caption><strong>My Reports</strong></caption>
-        <thead>
+    <div class="table-responsive w-75">
+        <table class="table table-hover table-bordered">
+            <thead class="table-primary">
             <tr>
-                <th>Reported User</th>
-                <th>Report Date</th>
-                <th>Reason</th>
-                <th>Status</th>
+                <th class="bg-primary text-white px-2 py-2 text-center">Reported User</th>
+                <th class="bg-primary text-white px-2 py-2 text-center">Report Date</th>
+                <th class="bg-primary text-white px-2 py-2 text-center">Reason</th>
+                <th class="bg-primary text-white px-2 py-2 text-center">Status</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             <c:choose>
                 <c:when test="${userReports.content.size() != 0}">
                     <c:forEach var="report" items="${userReports.content}">
                         <tr>
-                            <td><a href="/user/${report.reportedUser.id}"><c:out value="${report.reportedUser.username}"/></a></td>
-                            <td><c:out value="${report.formattedReportDate}"/></td>
+                            <td class="fw-bold">
+                                <c:choose>
+                                    <c:when test="${report.reportedUser.banned}">
+                                        <div class="text-muted"><c:out value="${report.reportedUser.username}"/></div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a class="text-decoration-none" href="/user/${report.reportedUser.id}"><c:out
+                                                value="${report.reportedUser.username}"/></a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <div class="text-muted"><c:out value="${report.formattedReportDate}"/></div>
+                            </td>
                             <td><c:out value="${report.reason}"/></td>
-                            <td><c:set var="statusString" value="${report.status.toString()}" />
-                                <p>${fn:replace(statusString, 'STATUS_', '')}</p></td>
+                            <td class="text-center">
+                                <c:set var="statusString" value="${report.status.toString()}"/>
+                                <c:choose>
+                                    <c:when test="${report.status == 'STATUS_ACCEPTED'}">
+                                        <div class="badge bg-success">ACCEPTED</div>
+                                    </c:when>
+                                    <c:when test="${report.status == 'STATUS_REJECTED'}">
+                                        <div class="badge bg-danger">REJECTED</div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="badge bg-primary mt-1">PENDING</div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
                         </tr>
-                    </c:forEach>
-
-                    <c:forEach begin="1" end="${totalPages}" var="index">
-                        <a href="/user/my-reports/${index}">${index}</a>
                     </c:forEach>
                 </c:when>
                 <c:otherwise>
                     <tr>
-                        <td colspan="4">No reports found!</td>
+                        <td colspan="4" class="text-center">No reports found!</td>
                     </tr>
                 </c:otherwise>
             </c:choose>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+
+        <ul class="pagination justify-content-center">
+            <c:forEach begin="1" end="${totalPages}" var="index">
+                <li class="page-item">
+                    <a href="/user/my-reports/${index}" class="page-link nav-link">${index}</a>
+                </li>
+            </c:forEach>
+        </ul>
+    </div>
 </section>
-<footer>
+<footer class="bg-primary text-white text-center p-3">
     <span>&copy; <span id="currentYear"></span> BlogHub. All rights reserved.</span>
 </footer>
+
 <script src="/js/index.js"></script>
 </body>
 </html>

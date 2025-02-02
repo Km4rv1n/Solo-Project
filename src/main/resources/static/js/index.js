@@ -1,6 +1,9 @@
-// ---- START - ALL PAGES ----
+// ---- Footer ----
 document.getElementById("currentYear").innerText = new Date().getFullYear();
+// ---- Footer End----
 
+
+// ---- Translator ----
 document.addEventListener('mouseup', function() {
     getSelectedText();
 });
@@ -28,7 +31,20 @@ async function translateSelectedText(text) {
 function displayTranslatedText(translatedText) {
     alert('Translated Text: ' + translatedText);
 }
-// ---- END - ALL PAGES ----
+
+// ---- Translator End ----
+
+// ---- Pagination Links ----
+const currentPath = window.location.pathname;
+const links = document.querySelectorAll('.nav-link');
+
+links.forEach(link => {
+    if (link.getAttribute('href').split('?')[0] === currentPath) {
+        link.classList.add('active');
+    }
+});
+// ---- Pagination Links End ----
+
 
 
 // ---- START - VIEW POST PAGE ----

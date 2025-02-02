@@ -8,7 +8,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -103,7 +102,7 @@ public class UserService {
      * @return page of users who are not in a blocking relationship with the current user, and are not the current user themselves
      */
     public Page<User> getNotBlockedUsersPageIncludingBanned(int pageNumber, User currentUser) {
-        PageRequest pageRequest = PageRequest.of(pageNumber, 2, Sort.Direction.DESC, "createdAt");
+        PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.Direction.DESC, "createdAt");
         return userRepository.findAllNotBlockedExcludingSelfIncludingBanned(pageRequest,currentUser);
     }
 

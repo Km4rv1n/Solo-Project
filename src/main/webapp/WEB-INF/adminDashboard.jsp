@@ -15,98 +15,139 @@
 <head>
     <title>Admin Dashboard</title>
     <link type="text/css" rel="stylesheet" href="/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
-<nav>
-    <h1>BlogHub</h1>
-    <form method="get" action="/posts/search/1">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="search" placeholder="Search by Topic, Author or Title..." name="searchQuery">
-        <input type="submit" value="&#128270;">
-    </form>
-
-    <a href="/user/personal-profile">
-        <img src="${currentUser.profilePictureUrl}" class="profile-icon" alt="profile-picture">
-        <span><c:out value="${currentUser.username}"/></span>
-    </a>
-
-    <div>
-        <label for="languageSelect">Translate to: </label>
-        <select id="languageSelect">
-            <option value="sq">🇦🇱&emsp;Albanian</option>
-            <option value="en">🇺🇸&emsp;English</option>
-            <option value="fr">🇫🇷&emsp;French</option>
-            <option value="de">🇩🇪&emsp;German</option>
-            <option value="es">🇪🇸&emsp;Spanish</option>
-        </select>
-    </div>
-
-    <form method="post" action="/logout">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="submit" value="Logout">
-    </form>
+<nav class="navbar navbar-expand-lg navbar-light bg-primary border-bottom px-5 py-3 mb-5 text-white">
+    <ul class="navbar-nav w-100 d-flex justify-content-between align-items-center">
+        <li class="nav-item">
+            <h1 class="navbar-brand mb-0 fs-3 text-white">BlogHub<small class="fw-light">&trade;</small></h1>
+        </li>
+        <li class="nav-item">
+            <form method="get" action="/posts/search/1" class="d-flex">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="search" class="form-control me-2" placeholder="Search by Topic, Author or Title..."
+                       name="searchQuery">
+                <button type="submit" class="btn btn-dark">Search</button>
+            </form>
+        </li>
+        <li class="nav-item">
+            <label for="languageSelect" class="me-1">Translate to: </label>
+            <select id="languageSelect" class="form-select form-select-sm d-inline w-auto">
+                <option value="sq">🇦🇱&emsp;Albanian</option>
+                <option value="en">🇺🇸&emsp;English</option>
+                <option value="fr">🇫🇷&emsp;French</option>
+                <option value="de">🇩🇪&emsp;German</option>
+                <option value="es">🇪🇸&emsp;Spanish</option>
+            </select>
+        </li>
+        <li class="nav-item">
+            <a href="/user/personal-profile" class="d-flex align-items-center text-decoration-none text-dark">
+                <img src="${currentUser.profilePictureUrl}" class="rounded-circle me-2" alt="profile-picture" width="40"
+                     height="40">
+                <span class="text-white"><c:out value="${currentUser.username}"/></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form method="post" action="/logout">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="submit" class="btn btn-danger btn-sm text-white" value="Log out">
+            </form>
+        </li>
+    </ul>
 </nav>
 
-<section class="middle">
+<h2 class="text-center">Manage Users</h2>
+
+<section class="d-flex justify-content-evenly px-5">
     <details open>
-        <summary>Menu</summary>
-        <ul>
-            <li><a href="/user/home/1">Home</a></li>
-            <li><a href="/posts/new">Create a Post</a></li>
-            <li><a href="/user/blocked">Blocked Users</a>&nbsp;<span><c:out
+        <summary class="menu-summary bg-primary text-white p-2 rounded-top text-center fw-bold">Menu</summary>
+        <ul class="menu-list list-unstyled">
+            <li class="border p-2 text-center"><a href="/user/home/1">Home</a></li>
+            <li class="border p-2 text-center"><a href="/posts/new">Create a Post</a></li>
+            <li class="border p-2 text-center"><a href="/user/blocked">Blocked Users</a>&emsp;<span
+                    class="badge bg-danger"><c:out
                     value="${currentUser.blockedUsers.size()}"/></span></li>
-            <li><a href="/posts/logged-user/1">My Posts</a>&nbsp;<span><c:out
+            <li class="border p-2 text-center"><a href="/posts/logged-user/1">My Posts</a>&emsp;<span
+                    class="badge bg-primary"><c:out
                     value="${currentUser.posts.size()}"/></span></li>
             <c:if test="${currentUser.role == 'ROLE_ADMIN'}">
-                <li><a href="/admin/dashboard/1">Admin Dashboard</a></li>
-                <li><a href="/admin/reports/1">Reports</a></li>
+                <li class="border p-2 text-center"><a href="/admin/dashboard/1">Admin Dashboard</a></li>
+                <li class="border p-2 rounded-bottom text-center"><a href="/admin/reports/1">Reports</a></li>
             </c:if>
             <c:if test="${currentUser.role == 'ROLE_USER'}">
-                <li><a href="/user/my-reports/1">My Reports</a></li>
+                <li class="border p-2 rounded-bottom text-center"><a href="/user/my-reports/1">My Reports</a></li>
             </c:if>
         </ul>
     </details>
 
-    <table border="1">
-        <caption><strong>Manage Users</strong></caption>
-        <thead>
+
+    <div class="table-responsive w-75">
+        <table class="table table-hover table-bordered">
+            <thead class="table-primary">
             <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Banned</th>
-                <th>Actions</th>
+                <th class="bg-primary text-white px-2 py-2 text-center">Username</th>
+                <th class="bg-primary text-white px-2 py-2 text-center">Email</th>
+                <th class="bg-primary text-white px-2 py-2 text-center">Role</th>
+                <th class="bg-primary text-white px-2 py-2 text-center">Banned</th>
+                <th class="bg-primary text-white px-2 py-2 text-center">Actions</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             <c:choose>
                 <c:when test="${users.content.size() != 0}">
                     <c:forEach var="user" items="${users.content}">
                         <tr>
-                            <td><a href="/user/${user.id}"><c:out value="${user.username}"/></a></td>
-                            <td><c:out value="${user.email}"/></td>
                             <td>
+                                <c:choose>
+                                    <c:when test="${user.banned}">
+                                        <div class="text-muted">
+                                            <c:out value="${user.username}"/>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="/user/${user.id}" class="text-decoration-none fw-bold"><c:out
+                                                value="${user.username}"/></a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td><c:out value="${user.email}"/></td>
+                            <td class="text-center">
                                 <c:if test="${user.role == 'ROLE_USER'}">
-                                    <c:out value="User"/>
+                                    <div class="badge bg-primary mt-1">User</div>
                                 </c:if>
                                 <c:if test="${user.role == 'ROLE_ADMIN'}">
-                                    <c:out value="Admin"/>
+                                    <div class="badge bg-info mt-1">Admin</div>
                                 </c:if>
                             </td>
-                            <td><c:out value="${user.banned}"/></td>
-                            <td>
+
+                            <td class="text-center">
+                                <c:choose>
+                                    <c:when test="${user.banned}">
+                                        <div class="badge bg-danger mt-1">Yes</div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="badge bg-success mt-1">No</div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="d-flex justify-content-between align-center px-5">
                                 <c:choose>
                                     <c:when test="${user.banned == false}">
                                         <form method="post" action="/admin/ban/${user.id}?currentPage=${currentPage}">
                                             <input type="hidden" name="_method" value="put">
                                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                            <input type="submit" value="Ban">
+                                            <input type="submit" value="Ban" class="btn btn-sm btn-danger px-4">
                                         </form>
                                         <c:if test="${user.role == 'ROLE_USER'}">
-                                            <form method="post" action="/admin/promote/${user.id}?currentPage=${currentPage}">
+                                            <form method="post"
+                                                  action="/admin/promote/${user.id}?currentPage=${currentPage}">
                                                 <input type="hidden" name="_method" value="put">
-                                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                                <input type="submit" value="Promote to Admin">
+                                                <input type="hidden" name="${_csrf.parameterName}"
+                                                       value="${_csrf.token}"/>
+                                                <input type="submit" value="Promote to Admin"
+                                                       class="btn btn-sm btn-success px-4">
                                             </form>
                                         </c:if>
                                     </c:when>
@@ -114,34 +155,34 @@
                                         <form method="post" action="/admin/unban/${user.id}?currentPage=${currentPage}">
                                             <input type="hidden" name="_method" value="put">
                                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                            <input type="submit" value="Unban">
+                                            <input type="submit" value="Unban" class="btn btn-sm btn-warning px-4">
                                         </form>
                                     </c:otherwise>
                                 </c:choose>
-
                             </td>
                         </tr>
                     </c:forEach>
-                    <div>
-                        <c:forEach begin="1" end="${totalPages}" var="index">
-                            <a href="/admin/dashboard/${index}">${index}</a>
-                        </c:forEach>
-                    </div>
-
-
-
                 </c:when>
                 <c:otherwise>
                     <tr>
-                        <td colspan="5">No users found!</td>
+                        <td colspan="5" class="text-center">No users found!</td>
                     </tr>
                 </c:otherwise>
             </c:choose>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+
+        <ul class="pagination justify-content-center">
+            <c:forEach begin="1" end="${totalPages}" var="index">
+                <li class="page-item">
+                    <a href="/admin/dashboard/${index}" class="page-link nav-link">${index}</a>
+                </li>
+            </c:forEach>
+        </ul>
+    </div>
 </section>
 
-<footer>
+<footer class="bg-primary text-white text-center p-3">
     <span>&copy; <span id="currentYear"></span> BlogHub. All rights reserved.</span>
 </footer>
 <script src="/js/index.js"></script>

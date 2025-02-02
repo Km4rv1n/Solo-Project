@@ -12,11 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface TopicRepository extends JpaRepository<Topic, Integer> {
-//    @Query("SELECT t " +
-//            "FROM Topic t " +
-//            "JOIN Post p ON p.topic.id = t.id " +
-//            "GROUP BY t.id " +
-//            "ORDER BY COUNT(p.id) DESC,t.name ASC LIMIT 10")
 
     @Query("""
             SELECT t

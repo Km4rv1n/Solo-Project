@@ -68,7 +68,7 @@ public class ReportService {
      * or those reports whose reporter(creator) has been banned, or those reports whose reported user is the current user
      */
     public Page<Report> getAllReports(int pageNumber, User currentUser) {
-        PageRequest pageRequest = PageRequest.of(pageNumber, 2, Sort.Direction.DESC, "reportDate");
+        PageRequest pageRequest = PageRequest.of(pageNumber, 10, Sort.Direction.DESC, "reportDate");
         return reportRepository.findAllReports(pageRequest, currentUser);
     }
 

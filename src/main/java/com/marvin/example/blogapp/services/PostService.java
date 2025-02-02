@@ -51,7 +51,7 @@ public class PostService {
      * @return a page object containing all posts created by the given user
      */
     public Page<Post> postsPerPageByCreator(int pageNumber,User user) {
-        PageRequest pageRequest = PageRequest.of(pageNumber, 4, Sort.Direction.DESC, "createdAt");
+        PageRequest pageRequest = PageRequest.of(pageNumber, 3, Sort.Direction.DESC, "createdAt");
         return postRepository.findAllByCreator(user, pageRequest);
     }
 
